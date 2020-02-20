@@ -1,0 +1,16 @@
+steps:
+  - apply:
+      manifest:
+        path: https://raw.githubusercontent.com/sololabs/demos/b523571c66057a5591bce22ad896729f1fee662b/petclinic_demo/petclinic-vets.yaml
+      values:
+        Namespace: default
+  - apply:
+      manifest:
+        path: vs-2.yaml
+  - curl:
+      path: /vets
+      statusCode: 200
+      responseBodySubstring: Boston
+      service:
+        name: gateway-proxy
+        namespace: gloo-system

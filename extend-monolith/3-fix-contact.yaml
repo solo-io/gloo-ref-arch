@@ -1,0 +1,24 @@
+steps:
+  - apply:
+      secret:
+        name: aws-creds
+        namespace: gloo-system
+        entries:
+          aws_access_key_id:
+            envVar: AWS_ACCESS_KEY_ID
+          aws_secret_access_key:
+            envVar: AWS_SECRET_ACCESS_KEY
+  - apply:
+      manifest:
+        path: upstream-aws.yaml
+  - apply:
+      manifest:
+        path: vs-3.yaml
+  - curl:
+      path: /contact.html
+      statusCode: 200
+      responseBodySubstring: Enter your email
+      attempts: 30
+      service:
+        name: gateway-proxy
+        namespace: gloo-system

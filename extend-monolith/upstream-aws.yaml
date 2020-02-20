@@ -1,0 +1,11 @@
+apiVersion: gloo.solo.io/v1
+kind: Upstream
+metadata:
+  name: aws
+  namespace: gloo-system
+spec:
+  aws:
+    region: us-east-1
+    secretRef:
+      name: aws-creds
+      namespace: gloo-system

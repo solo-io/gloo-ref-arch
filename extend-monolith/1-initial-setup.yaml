@@ -1,0 +1,23 @@
+steps:
+  - helm3Deploy:
+      releaseName: gloo
+      namespace: gloo-system
+      releaseUri: "https://storage.googleapis.com/gloo-ee-helm/charts/gloo-ee-1.2.6.tgz"
+      set:
+        "license_key": "env:LICENSE_KEY"
+  - apply:
+      manifests:
+        paths:
+        - https://raw.githubusercontent.com/sololabs/demos/b523571c66057a5591bce22ad896729f1fee662b/petclinic_demo/petclinic.yaml
+        - https://raw.githubusercontent.com/sololabs/demos/b523571c66057a5591bce22ad896729f1fee662b/petclinic_demo/petclinic-db.yaml
+      values:
+        Namespace: default
+  - apply:
+      manifest:
+        path: vs-1.yaml
+  - curl:
+      path: /
+      statusCode: 200
+      service:
+        name: gateway-proxy
+        namespace: gloo-system
