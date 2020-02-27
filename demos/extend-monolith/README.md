@@ -1,4 +1,4 @@
-*This doc was automatically created by Valet 0.4.3-3-gd40b02b from the workflow defined in workflow.yaml. To deploy the demo, you can use `valet ensure -f workflow.yaml` from this directory, or execute the steps manually. Do not modify this file directly, it will be overwritten the next time the docs are generated.*
+_This doc was automatically created by Valet 0.4.3-3-gd40b02b from the workflow defined in workflow.yaml. To deploy the demo, you can use `valet ensure -f workflow.yaml` from this directory, or execute the steps manually. Do not modify this file directly, it will be overwritten the next time the docs are generated._
 
 # Extending a Monlithic Application with Gloo
 
@@ -121,7 +121,7 @@ We can also validate with a curl command that a request to that page contains so
 
 `curl -s localhost:8080/vets.html | grep Boston | wc -l`
 
-This should return 1 - one of the vets in the table now includes a location of Boston.
+This should return 1. One of the vets in the table now includes a location of Boston.
 
 
 ## Extend the monolith to an AWS lambda
