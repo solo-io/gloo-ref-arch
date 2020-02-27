@@ -1,0 +1,8 @@
+# Pre-requisites:
+# - `valet ensure -f ../common/workflows/deploy-gloo-enterprise.yaml`
+
+steps:
+  - workflow:
+      path: 1-deploy-petclinic.yaml
+  - workflow:
+      path: 2-configure-routetable.yaml

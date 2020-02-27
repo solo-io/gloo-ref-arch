@@ -1,2 +1,0 @@
-Our standard petclinic demo. 
-

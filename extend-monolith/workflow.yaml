@@ -1,7 +1,0 @@
-steps:
-  - workflow:
-      path: 1-initial-setup.yaml
-  - workflow:
-      path: 2-update-vets.yaml
-  - workflow:
-      path: 3-fix-contact.yaml

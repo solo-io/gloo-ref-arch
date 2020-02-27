@@ -1,0 +1,20 @@
+steps:
+  - apply:
+      manifest:
+        path: routetable.yaml
+  - apply:
+      manifest:
+        path: vs-2.yaml
+  - condition:
+      type: Proxy
+      name: gateway-proxy
+      namespace: gloo-system
+      jsonpath: '{.status.state}'
+      value: "1"
+      timeout: 10s
+  - curl:
+      path: /
+      statusCode: 200
+      service:
+        name: gateway-proxy
+        namespace: gloo-system
