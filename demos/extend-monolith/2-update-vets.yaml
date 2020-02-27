@@ -34,4 +34,4 @@ steps:
 
         `curl -s localhost:8080/vets.html | grep Boston | wc -l`
 
-        This should return 1 - one of the vets in the table now includes a location of Boston.
+        This should return 1. One of the vets in the table now includes a location of Boston.
