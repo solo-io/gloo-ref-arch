@@ -1,3 +1,5 @@
+*This doc was automatically created by Valet 0.4.3-3-gd40b02b from the workflow defined in workflow.yaml. To deploy the demo, you can use `valet ensure -f workflow.yaml` from this directory, or execute the steps manually. Do not modify this file directly, it will be overwritten the next time the docs are generated.*
+
 # Extending a Monlithic Application with Gloo
 
 In this workflow, we'll set up the petclinic application, which is a "monolithic" application that consists of a backend server and a database. Once this application is configured in Gloo, we'll look at how you may deploy a new microservice and connect it to your application. Then we'll replace a buggy part of the application with a new implementation in AWS lambda.
