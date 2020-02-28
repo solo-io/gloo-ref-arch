@@ -1,0 +1,21 @@
+steps:
+  - apply:
+      manifest:
+        path: https://raw.githubusercontent.com/solo-io/gloo/v1.2.9/example/petstore/petstore.yaml
+  # openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=animalstore.example.com"
+  # kubectl create secret tls animal-certs --key tls.key --cert tls.crt --namespace gloo-system --dry-run  -oyaml > tls-sni-secret.yaml
+  - apply:
+      manifest:
+        path: tls-sni-secret.yaml
+  - apply:
+      manifest:
+        path: vs-animal.yaml
+  # curl -kv -H "Host: animalstore.example.com" $(glooctl proxy url --port https)/animals
+  - curl:
+      path: /animals
+      statusCode: 200
+      service:
+        name: gateway-proxy
+        namespace: gloo-system
+        port: https
+      host: animalstore.example.com

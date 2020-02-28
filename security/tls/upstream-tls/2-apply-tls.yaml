@@ -1,0 +1,9 @@
+steps:
+  - apply:
+      manifest:
+        path: tls-secret.yaml
+  - apply:
+      manifest:
+        path: upstream-2.yaml
+  # bounce gateway proxy
+  # curl...

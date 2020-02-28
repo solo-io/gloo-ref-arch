@@ -8,6 +8,9 @@ docs:
     consists of a backend server and a database. Once this application is configured in Gloo, we'll look at how you
     may deploy a new microservice and connect it to your application. Then we'll
     replace a buggy part of the application with a new implementation in AWS lambda.
+  # TODO: hack to create a 2nd paragraph...
+  notes: >
+    This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace. 
 steps:
   - workflow:
       path: 1-deploy-petclinic.yaml

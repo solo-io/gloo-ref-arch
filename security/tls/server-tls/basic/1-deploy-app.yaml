@@ -1,0 +1,13 @@
+steps:
+  - apply:
+      manifest:
+        path: https://raw.githubusercontent.com/solo-io/gloo/v1.2.9/example/petstore/petstore.yaml
+  - apply:
+      manifest:
+        path: vs-petstore-1.yaml
+  - curl:
+      path: /sample-route-1
+      statusCode: 200
+      service:
+        name: gateway-proxy
+        namespace: gloo-system

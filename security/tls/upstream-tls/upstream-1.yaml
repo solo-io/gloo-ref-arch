@@ -1,0 +1,13 @@
+apiVersion: gloo.solo.io/v1
+kind: Upstream
+metadata:
+  name: default-example-tls-server-8080
+  namespace: gloo-system
+spec:
+  discoveryMetadata: {}
+  kube:
+    selector:
+      app: example-tls-server
+    serviceName: example-tls-server
+    serviceNamespace: default
+    servicePort: 8080

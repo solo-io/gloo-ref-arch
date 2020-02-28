@@ -1,0 +1,17 @@
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  name: sample-app
+  namespace: gloo-system
+spec:
+  virtualHost:
+    domains:
+      - '*'
+    routes:
+      - matchers:
+          - exact: /hello
+        routeAction:
+          single:
+            upstream:
+              name: default-example-tls-server-8080
+              namespace: gloo-system

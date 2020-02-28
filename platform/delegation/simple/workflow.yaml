@@ -1,6 +1,13 @@
 # Pre-requisites:
 # - `valet ensure -f ../common/workflows/deploy-gloo-enterprise.yaml`
-
+docs:
+  title: Extending a Monlithic Application with Gloo
+  description: >
+    In this workflow, we'll set up the petclinic application, which
+    consists of a backend server and a database. Once this application is configured in Gloo, we'll look at how you
+    can utilize **delegation** to enable teams to manage their own routes while an admin can manage the overall domain.
+  notes: >
+    This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace.
 steps:
   - workflow:
       path: 1-deploy-petclinic.yaml

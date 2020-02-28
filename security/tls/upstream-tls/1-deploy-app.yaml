@@ -1,0 +1,7 @@
+steps:
+  - apply:
+      manifest:
+        path: sample-app.yaml
+  - apply:
+      manifest:
+        path: vs.yaml

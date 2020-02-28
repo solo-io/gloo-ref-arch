@@ -1,0 +1,21 @@
+steps:
+  # openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=petstore.example.com"
+  # kubectl create secret tls gateway-tls --key tls.key --cert tls.crt --namespace gloo-system --dry-run -oyaml > tls-secret.yaml
+  - apply:
+      manifest:
+        path: tls-secret.yaml
+  - apply:
+      manifest:
+        path: vs-petstore-2.yaml
+  - curl:
+      path: /sample-route-1
+      statusCode: 200
+      service:
+        name: gateway-proxy
+        namespace: gloo-system
+        port: https
+
+# to verify without skipping insecure:
+# - edit /etc/hosts with mapping for "192.168.64.28" to petstore.example.com
+# - update curl command to use matching host, domain, cacert
+#   curl -v -H "Host: petstore.example.com" --cacert tls.crt  https://petstore.example.com:30864/sample-route-1

@@ -1,0 +1,26 @@
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  name: animal
+  namespace: gloo-system
+spec:
+  displayName: animal
+  sslConfig:
+    secretRef:
+      name: animal-certs
+      namespace: gloo-system
+    sniDomains:
+      - animalstore.example.com
+  virtualHost:
+    domains:
+      - animalstore.example.com
+    routes:
+      - matchers:
+          - exact: /animals
+        options:
+          prefixRewrite: /api/pets
+        routeAction:
+          single:
+            upstream:
+              name: default-petstore-8080
+              namespace: gloo-system

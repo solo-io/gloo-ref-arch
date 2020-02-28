@@ -5,6 +5,9 @@ _This doc was automatically created by Valet 0.4.3-3-gd40b02b from the workflow 
 In this workflow, we'll set up the petclinic application, which is a "monolithic" application that consists of a backend server and a database. Once this application is configured in Gloo, we'll look at how you may deploy a new microservice and connect it to your application. Then we'll replace a buggy part of the application with a new implementation in AWS lambda.
 
 
+This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace. 
+
+
 ## Deploy the Petclinic Monolith
 
 First, let's deploy the petclinic monolith.
