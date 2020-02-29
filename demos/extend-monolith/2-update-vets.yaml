@@ -16,7 +16,8 @@ steps:
         Now that the vets microservice is deployed, we can route requests to the vets page to this service. For all other requests,
         we can continue to route the request to the monolith. So we update the `petclinic` virtual service
         with this new route.
-    renderAsYaml: true
+    values:
+      RenderAsYaml: true
   - curl:
       path: /vets.html
       statusCode: 200

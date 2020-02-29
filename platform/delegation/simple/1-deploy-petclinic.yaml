@@ -24,7 +24,8 @@ steps:
         `*` to match on any domain, though we could use a specific domain if the `Host` header is set. Use `kubectl` to apply the following yaml:
       notes: >
         To easily copy a yaml snippet into a command, copy it to the clipboard then run `pbcopy | kubectl apply -f -`.
-    renderAsYaml: true
+    values:
+      RenderAsYaml: true
   - curl:
       path: /
       statusCode: 200

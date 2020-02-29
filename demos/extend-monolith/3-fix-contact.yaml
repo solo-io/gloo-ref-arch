@@ -24,7 +24,8 @@ steps:
       notes: >
         Gloo function discovery will run as soon as this upstream is added, and it should quickly detect lambdas in your
         account. Those lambdas will be added as discovered functions on the upstream.
-    renderAsYaml: true
+    values:
+      RenderAsYaml: true
   - apply:
       manifest:
         path: vs-3.yaml
@@ -35,7 +36,8 @@ steps:
         with a new route so that requests to the contact page are now forwarded to a lambda. In this case, we've
         deployed a lambda to our AWS account called `contact-form:3`. The json response will contain a field
         with html; we specify to transform the response, so that html is returned from Envoy.
-    renderAsYaml: true
+    values:
+      RenderAsYaml: true
   - curl:
       path: /contact.html
       statusCode: 200
