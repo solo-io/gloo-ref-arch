@@ -5,5 +5,15 @@ steps:
   - apply:
       manifest:
         path: upstream-2.yaml
-  # bounce gateway proxy
-  # curl...
+    values:
+      RenderAsYaml: true
+  - restartPods:
+      namespace: gloo-system
+      labels:
+        - "gloo=gateway-proxy"
+  - curl:
+      service:
+        name: gateway-proxy
+        namespace: gloo-system
+      path: /hello
+      statusCode: 200

@@ -37,7 +37,8 @@ steps:
         route to specific domains by configuring SNI.
       notes: >
         To easily copy a yaml snippet into a command, copy it to the clipboard then run `pbcopy | kubectl apply -f -`.
-    renderAsYaml: true
+    values:
+      RenderAsYaml: true
   # curl -kv -H "Host: animalstore.example.com" $(glooctl proxy url --port https)/animals
   - curl:
       path: /animals

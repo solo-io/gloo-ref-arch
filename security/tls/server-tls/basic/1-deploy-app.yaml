@@ -18,7 +18,8 @@ steps:
         Now we can create a gloo virtual service that adds a route to the petclinic application. Use `kubectl` to apply the following yaml:
       notes: >
         To easily copy a yaml snippet into a command, copy it to the clipboard then run `pbcopy | kubectl apply -f -`.
-    renderAsYaml: true
+    values:
+      RenderAsYaml: true
   - curl:
       path: /sample-route-1
       statusCode: 200

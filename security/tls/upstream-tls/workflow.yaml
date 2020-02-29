@@ -1,0 +1,19 @@
+# Pre-requisites:
+# - `valet ensure -f ../../common/workflows/deploy-gloo-enterprise.yaml`
+
+docs:
+  title: Using SNI to route to specific domains with TLS
+  description: >
+    In this workflow, we'll set up a simple application that showcases how Gloo can be used to establish TLS between
+    the gateway proxy and an upstream service.
+  notes: >
+    This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace.
+steps:
+  - workflow:
+      path: 1-deploy-app.yaml
+    docs:
+      title: Deploy the example application
+  - workflow:
+      path: 2-apply-tls.yaml
+    docs:
+      title: Configure Gloo for TLS with the upstream

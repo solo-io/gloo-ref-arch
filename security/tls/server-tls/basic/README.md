@@ -1,4 +1,4 @@
-_This doc was automatically created by Valet 0.4.3-3-gd40b02b from the workflow defined in workflow.yaml. To deploy the demo, you can use `valet ensure -f workflow.yaml` from this directory, or execute the steps manually. Do not modify this file directly, it will be overwritten the next time the docs are generated._
+_This doc was automatically created by Valet 0.4.3-4-gc835eeb from the workflow defined in workflow.yaml. To deploy the demo, you can use `valet ensure -f workflow.yaml` from this directory, or execute the steps manually. Do not modify this file directly, it will be overwritten the next time the docs are generated._
 
 # Using TLS between Client and Gateway Proxy
 
@@ -135,4 +135,4 @@ Note that we turned off client-side verification with the `-k` option in curl. W
 associating a real domain instead of `*` to this virtual service, updating DNS to map that domain to the proxy
 IP address, and issuing the curl request to the actual domain and https port of the proxy. We would also need to
 provide a cacert (`tls.crt` here would suffice, though in practice you want the certificates to be generated
-by a known certificate authority). 
+by a known certificate authority).

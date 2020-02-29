@@ -5,3 +5,10 @@ steps:
   - apply:
       manifest:
         path: vs.yaml
+    values:
+      RenderAsYaml: true
+  - curl:
+      service:
+        name: gateway-proxy
+        namespace: gloo-system
+      statusCode: 404
