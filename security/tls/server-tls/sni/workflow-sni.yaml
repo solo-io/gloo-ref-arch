@@ -1,3 +1,6 @@
+# TODO: Rename this back to "workflow.yaml" so it will run in the scripts, once this is fixed:
+# https://github.com/solo-io/gloo/issues/2534
+
 # Pre-requisites:
 # - `valet ensure -f ../../common/workflows/deploy-gloo-enterprise.yaml`
 
