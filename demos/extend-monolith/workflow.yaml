@@ -13,7 +13,7 @@ docs:
     This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace. 
 steps:
   - workflow:
-      path: 1-deploy-petclinic.yaml
+      path: ../../common/workflows/deploy-petclinic.yaml
     docs:
       title: Deploy the Petclinic Monolith
       description: First, let's deploy the petclinic monolith.

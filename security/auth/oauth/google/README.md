@@ -1,11 +1,11 @@
 _This doc was automatically created by Valet 0.4.3-6-gc0254cf from the workflow defined in workflow.yaml. To deploy the demo, you can use `valet ensure -f workflow.yaml` from this directory, or execute the steps manually. Do not modify this file directly, it will be overwritten the next time the docs are generated._
 
-# Extending a Monlithic Application with Gloo
+# Oauth with Google
 
-In this workflow, we'll set up the petclinic application, which consists of a backend server and a database. Once this application is configured in Gloo, we'll look at how you can utilize **delegation** to enable teams to manage their own routes while an admin can manage the overall domain.
+In this workflow, we'll deploy the petclinic application with Gloo. Then we'll set up oauth with Google as an OIDC provider.
 
 
-This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace.
+This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace. 
 
 
 ## Deploy the Petclinic Monolith
@@ -39,6 +39,7 @@ metadata:
 spec:
   virtualHost:
     domains:
+      # We can use the domain "*" to match on any domain, avoiding the need for a host / host header when testing the route.
       - "*"
     routes:
       - matchers:
@@ -68,29 +69,37 @@ We can also invoke a curl command to ensure the service is available.
 This should return a 200 and the html for the page.
 
 
-## Delegate the route to a route table
+## Setup oauth
 
-Now we'll create this route in a route table. Then we'll change the virtual service route to use a `delegateAction` instead of the `routeAction`. This should behave exactly as before. The advantage to separating the route with a route table is that it provides the ability to utilize Kubernetes RBAC to allow users to own their own route tables, while enabling an admin to manage the virtual service and associated domains.
+Now we will update the virtual service to require authentication via oauth with Google as the OIDC provider.
 
- 
+### Store the google client secret
 
+In order to authenticate with Google, Gloo needs a client secret ID and value from Google. This can be created in the [google console](https://console.developers.google.com/apis/credentials), and will be associated with one of your GCP projects so that users in that project can authenticate with oauth.
+Store this secret value in an environment variable called `CLIENT_SECRET`. Now this secret can be written to Kubernetes with `glooctl create secret --client-secret $CLIENT_SECRET google-oauth`.
+
+
+### Store the auth config
+
+Now we can create a gloo auth config that references this client secret and provides the rest of the google oauth information. Note that you should replace `<CLIENT_ID>` with the real ID associated with the secret value from the previous step.
 
 
 ```
-kubectl apply -f routetable.yaml
+apiVersion: enterprise.gloo.solo.io/v1
+kind: AuthConfig
+metadata:
+  name: google-oauth
+  namespace: gloo-system
+spec:
+  configs:
+    - oauth:
+        app_url: http://localhost:8080
+        callback_path: /callback
+        client_id: <CLIENT_ID>
+        client_secret_ref:
+          name: google-oauth
+          namespace: gloo-system
+        issuer_url: https://accounts.google.com
 ```
 
- 
-
-
-
-```
-kubectl apply -f vs-2.yaml
-```
-
- 
-
-
-
- 
-
+To easily copy a yaml snippet into a command, copy it to the clipboard then run `pbcopy | kubectl apply -f -`.

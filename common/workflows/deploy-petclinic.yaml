@@ -16,6 +16,9 @@ steps:
         may take a few minutes to download the containers, depending on your connection.
   - apply:
       manifest:
+        # HACK: This workflow (deploy-petclinic.yaml) is in a common directory because the same steps are run in many workflows.
+        # However, currently valet attempts to load all the files relative to the directory it is run from, so this "vs-1.yaml"
+        # virtual service actually should exist in that directory. 
         path: vs-1.yaml
     docs:
       title: Create a route in Gloo

@@ -10,6 +10,16 @@ docs:
     This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace.
 steps:
   - workflow:
-      path: 1-deploy-petclinic.yaml
+      path: ../../../common/workflows/deploy-petclinic.yaml
+    docs:
+      title: Deploy the Petclinic Monolith
+      description: First, let's deploy the petclinic monolith.
   - workflow:
       path: 2-configure-routetable.yaml
+    docs:
+      title: Delegate the route to a route table
+      description: >
+        Now we'll create this route in a route table. Then we'll change the virtual service route to use a `delegateAction`
+        instead of the `routeAction`. This should behave exactly as before. The advantage to separating the route
+        with a route table is that it provides the ability to utilize Kubernetes RBAC to allow users to own their own
+        route tables, while enabling an admin to manage the virtual service and associated domains.
