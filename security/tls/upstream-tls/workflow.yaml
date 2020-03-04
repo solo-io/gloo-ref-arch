@@ -2,15 +2,13 @@
 # - `valet ensure -f ../../common/workflows/deploy-gloo-enterprise.yaml`
 
 title: Using Gloo with Upstream TLS
-description: >
-  In this workflow, we'll set up a simple application that showcases how Gloo can be used to establish TLS between
-  the gateway proxy and an upstream service.
-notes: >
-  This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace.
+description:
+  - >
+    In this workflow, we'll set up a simple application that showcases how Gloo can be used to establish TLS between
+    the gateway proxy and an upstream service.
+  - This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace.
 steps:
   - workflow:
       path: 1-deploy-app.yaml
-    title: Deploy the example application
   - workflow:
       path: 2-apply-tls.yaml
-    title: Configure Gloo for TLS with the upstream

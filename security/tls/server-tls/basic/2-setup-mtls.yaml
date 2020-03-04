@@ -1,27 +1,32 @@
+title: Setup TLS between the client and the gateway proxy
+description:
+  - We need to acquire a certificate, and then add it as a configuration on our virtual service.
 steps:
   # openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=petstore.example.com"
   # kubectl create secret tls gateway-tls --key tls.key --cert tls.crt --namespace gloo-system --dry-run -oyaml > tls-secret.yaml
   - apply:
       manifest:
         path: tls-secret.yaml
-    description: |
-      For demonstration purposes, we will generate a self-signed cert locally using `openssl`:
+    description:
+      - |
+        For demonstration purposes, we will generate a self-signed cert locally using `openssl`:
 
-      `openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=petstore.example.com"`
+        `openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=petstore.example.com"`
 
-      Then, we can store the certificate in Kubernetes as a `tls` type secret. This can be created with the following command:
+        Then, we can store the certificate in Kubernetes as a `tls` type secret. This can be created with the following command:
 
-      `kubectl create secret tls gateway-tls --key tls.key --cert tls.crt --namespace gloo-system`
+        `kubectl create secret tls gateway-tls --key tls.key --cert tls.crt --namespace gloo-system`
 
-      For convenience, this secret has been saved and can be applied as a manifest:
+        For convenience, this secret has been saved and can be applied as a manifest:
   - apply:
       manifest:
         path: vs-petstore-2.yaml
     title: Update the virtual service with an SSL configuration
-    description: |
-      By default, since no SSL config was provided on the virtual service, the route was bound to the http port. We
-      can instead expose this via the https port by updating the virtual service with an SSL config that references
-      the secret we just created:
+    description:
+      - |
+        By default, since no SSL config was provided on the virtual service, the route was bound to the http port. We
+        can instead expose this via the https port by updating the virtual service with an SSL config that references
+        the secret we just created:
     docsValues:
       RenderAsYaml: "true"
   - curl:
@@ -32,22 +37,23 @@ steps:
         namespace: gloo-system
         port: https
     title: Test the route
-    description: |
-      To test this route, we will leverage glooctl to help determine the https port, and issue a curl request to it:
+    description:
+      - |
+        To test this route, we will leverage glooctl to help determine the https port, and issue a curl request to it:
 
-      `curl -k $(glooctl proxy url --port https)/sample-route-1`
+        `curl -k $(glooctl proxy url --port https)/sample-route-1`
 
-      Note that we used the `port` flag to indicate https. This should return a 200 and the following json:
+        Note that we used the `port` flag to indicate https. This should return a 200 and the following json:
 
-      ```
-      [{"id":1,"name":"Dog","status":"available"},{"id":2,"name":"Cat","status":"pending"}]
-      ```
+        ```
+        [{"id":1,"name":"Dog","status":"available"},{"id":2,"name":"Cat","status":"pending"}]
+        ```
 
-      Note that we turned off client-side verification with the `-k` option in curl. We could enable full mTLS by
-      associating a real domain instead of `*` to this virtual service, updating DNS to map that domain to the proxy
-      IP address, and issuing the curl request to the actual domain and https port of the proxy. We would also need to
-      provide a cacert (`tls.crt` here would suffice, though in practice you want the certificates to be generated
-      by a known certificate authority).
+        Note that we turned off client-side verification with the `-k` option in curl. We could enable full mTLS by
+        associating a real domain instead of `*` to this virtual service, updating DNS to map that domain to the proxy
+        IP address, and issuing the curl request to the actual domain and https port of the proxy. We would also need to
+        provide a cacert (`tls.crt` here would suffice, though in practice you want the certificates to be generated
+        by a known certificate authority).
 
 # to verify without skipping insecure:
 # - edit /etc/hosts with mapping for "192.168.64.28" to petstore.example.com

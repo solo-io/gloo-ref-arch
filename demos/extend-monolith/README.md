@@ -1,4 +1,4 @@
-_This doc was automatically created by Valet 0.4.3-7-g78e3ed9 from the workflow defined in workflow.yaml. To deploy the demo, you can use `valet ensure -f workflow.yaml` from this directory, or execute the steps manually. Do not modify this file directly, it will be overwritten the next time the docs are generated._
+_This doc was automatically created by Valet 0.4.3-8-g87110e5 from the workflow defined in workflow.yaml. To deploy the demo, you can use `valet ensure -f workflow.yaml` from this directory, or execute the steps manually. Do not modify this file directly, it will be overwritten the next time the docs are generated._
 
 # Extending a Monlithic Application with Gloo
 
@@ -8,9 +8,9 @@ In this workflow, we'll set up the petclinic application, which is a "monolithic
 This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace.
 
 
- 
+## Deploy the Petclinic Monolith
 
-
+Let's deploy the petclinic monolith.
 
  
 
@@ -21,6 +21,8 @@ We can run the following commands to deploy the application to Kubernetes. These
 kubectl apply -f https://raw.githubusercontent.com/sololabs/demos/b523571c66057a5591bce22ad896729f1fee662b/petclinic_demo/petclinic.yaml
 kubectl apply -f https://raw.githubusercontent.com/sololabs/demos/b523571c66057a5591bce22ad896729f1fee662b/petclinic_demo/petclinic-db.yaml
 ```
+
+ 
 
 Make sure these pods are running by executing `kubectl get pod` and checking the readiness status for the two petclinic pods. It may take a few minutes to download the containers, depending on your connection.
 
@@ -51,6 +53,8 @@ spec:
               namespace: gloo-system
 ```
 
+ 
+
 To easily copy a yaml snippet into a command, copy it to the clipboard then run `pbcopy | kubectl apply -f -`.
 
 
@@ -69,8 +73,9 @@ We can also invoke a curl command to ensure the service is available.
 This should return a 200 and the html for the page.
 
 
- 
+## Extend the monolith with a new microservice
 
+We want to modify the application's "vets" page, to include a new column in the table indicating the location of the vet. We will solve this by deploying a new microservice that serves the updated version of that page, and then add a route to Gloo so that requests for the `/vets` path will be routed to the new microservice.
 
 
  
@@ -126,8 +131,9 @@ We can also validate with a curl command that a request to that page contains so
 This should return 1. One of the vets in the table now includes a location of Boston.
 
 
- 
+## Extend the monolith to an AWS lambda
 
+There is a bug in the monolithic application. If we open up the "contact" page, we'll see an error. Like above, we could solve this without modifying the monolith by adding another route to Gloo. In this case, we'll show how you can use Gloo to route to serverless functions. We will deploy a lambda to AWS with a new implementation of the contact page, and wire that to our application.
 
 
 ### Create a secret with your AWS credentials
@@ -144,6 +150,9 @@ kubectl create secret generic -n  gloo-system aws-creds --from-env=aws_access_ke
 Now we need to create an upstream in Gloo, representing a routing destination in AWS and referencing the credentials.
 
 
+Gloo function discovery will run as soon as this upstream is added, and it should quickly detect lambdas in your account. Those lambdas will be added as discovered functions on the upstream.
+
+
 ```yaml
 apiVersion: gloo.solo.io/v1
 kind: Upstream
@@ -157,9 +166,6 @@ spec:
       name: aws-creds
       namespace: gloo-system
 ```
-
-Gloo function discovery will run as soon as this upstream is added, and it should quickly detect lambdas in your account. Those lambdas will be added as discovered functions on the upstream.
-
 
 ### Add a route to a lambda
 

@@ -1,4 +1,5 @@
-steps:
+title: Configure Gloo for TLS with the upstream
+teps:
   - apply:
       manifest:
         path: tls-secret.yaml

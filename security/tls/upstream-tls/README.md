@@ -1,4 +1,4 @@
-_This doc was automatically created by Valet 0.4.3-7-g78e3ed9 from the workflow defined in workflow.yaml. To deploy the demo, you can use `valet ensure -f workflow.yaml` from this directory, or execute the steps manually. Do not modify this file directly, it will be overwritten the next time the docs are generated._
+_This doc was automatically created by Valet 0.4.3-8-g87110e5 from the workflow defined in workflow.yaml. To deploy the demo, you can use `valet ensure -f workflow.yaml` from this directory, or execute the steps manually. Do not modify this file directly, it will be overwritten the next time the docs are generated._
 
 # Using Gloo with Upstream TLS
 
@@ -7,22 +7,15 @@ In this workflow, we'll set up a simple application that showcases how Gloo can 
 
 This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace.
 
+## Deploy the example application
 
  
-
-
-
- 
-
-
 
 ```
 kubectl apply -f sample-app.yaml
 ```
 
  
-
-
 
 ```yaml
 apiVersion: gateway.solo.io/v1
@@ -46,50 +39,4 @@ spec:
 
  
 
-
-
- 
-
-
-
- 
-
-
-
-```
-kubectl apply -f tls-secret.yaml
-```
-
- 
-
-
-
-```yaml
-apiVersion: gloo.solo.io/v1
-kind: Upstream
-metadata:
-  labels:
-    discovered_by: kubernetesplugin
-    service: example-tls-server
-  name: default-example-tls-server-8080
-  namespace: gloo-system
-spec:
-  discoveryMetadata: {}
-  kube:
-    selector:
-      app: example-tls-server
-    serviceName: example-tls-server
-    serviceNamespace: default
-    servicePort: 8080
-  sslConfig:
-    secretRef:
-      name: upstream-tls
-      namespace: default
-```
-
- 
-
-
-
- 
-
+## Configure Gloo for TLS with the upstream

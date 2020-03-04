@@ -1,3 +1,4 @@
+title: Deploy the example application
 steps:
   - apply:
       manifest:

@@ -2,20 +2,13 @@
 # - `valet ensure -f ../../common/workflows/deploy-gloo-enterprise.yaml`
 
 title: Deploying Gloo with basic authentication
-description: >
-  In this workflow, we'll set up the petstore application. Then we'll turn on basic authentication on the route,
-  requiring a username and password be provided for the request to pass through Envoy.
-notes: >
-  This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace.
+description:
+  - >
+    In this workflow, we'll set up the petstore application. Then we'll turn on basic authentication on the route,
+    requiring a username and password be provided for the request to pass through Envoy.
+  - This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace.
 steps:
   - workflow:
       path: 1-deploy-app.yaml
-    title: Deploy the Petstore Application
-    description: First, let's deploy the petstore application.
   - workflow:
       path: 2-add-basic-auth.yaml
-    title: Setup basic authentication
-    description: >
-      We want to update the behavior of the proxy so that it checks for a valid username and password in the request
-      headers before forwarding the request to the upstream. In the case of basic auth, the authorization header must
-      match a username and password in the dictionary of users on the auth config.

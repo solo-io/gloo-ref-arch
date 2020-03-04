@@ -2,18 +2,11 @@
 # - `valet ensure -f ../../common/workflows/deploy-gloo-enterprise.yaml`
 
 title: Oauth with Google
-description: >
-  In this workflow, we'll deploy the petclinic application with Gloo. Then we'll set up oauth with Google as an OIDC
-  provider.
-notes: >
-  This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace.
+description:
+  - In this workflow, we'll deploy the petclinic application with Gloo. Then we'll set up oauth with Google as an OIDC provider.
+  - This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace.
 steps:
   - workflow:
       path: ../../../../common/workflows/deploy-petclinic.yaml
-    title: Deploy the Petclinic Monolith
-    description: First, let's deploy the petclinic monolith.
   - workflow:
       path: 2-setup-oauth.yaml
-    title: Setup oauth
-    description: >
-      Now we will update the virtual service to require authentication via oauth with Google as the OIDC provider.
