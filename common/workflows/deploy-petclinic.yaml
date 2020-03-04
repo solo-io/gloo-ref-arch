@@ -7,45 +7,42 @@ steps:
       values:
         # By setting this, valet will wait till all the pods are ready in the default namespace (where petclinic is installed)
         Namespace: default
-    docs:
-      description: >
-        We can run the following commands to deploy the application to Kubernetes. These yaml files contain the Kubernetes deployment and service
-        definitions for the application.
-      notes: >
-        Make sure these pods are running by executing `kubectl get pod` and checking the readiness status for the two petclinic pods. It
-        may take a few minutes to download the containers, depending on your connection.
+    description: >
+      We can run the following commands to deploy the application to Kubernetes. These yaml files contain the Kubernetes deployment and service
+      definitions for the application.
+    notes: >
+      Make sure these pods are running by executing `kubectl get pod` and checking the readiness status for the two petclinic pods. It
+      may take a few minutes to download the containers, depending on your connection.
   - apply:
       manifest:
         # HACK: This workflow (deploy-petclinic.yaml) is in a common directory because the same steps are run in many workflows.
         # However, currently valet attempts to load all the files relative to the directory it is run from, so this "vs-1.yaml"
-        # virtual service actually should exist in that directory. 
+        # virtual service actually should exist in that directory.
         path: vs-1.yaml
-    docs:
-      title: Create a route in Gloo
-      description: >
-        Now we can create a gloo virtual service that adds a route to the petclinic application. In this example, we'll use the domain
-        `*` to match on any domain, though we could use a specific domain if the `Host` header is set. Use `kubectl` to apply the following yaml:
-      notes: >
-        To easily copy a yaml snippet into a command, copy it to the clipboard then run `pbcopy | kubectl apply -f -`.
-    values:
-      RenderAsYaml: true
+    title: Create a route in Gloo
+    description: >
+      Now we can create a gloo virtual service that adds a route to the petclinic application. In this example, we'll use the domain
+      `*` to match on any domain, though we could use a specific domain if the `Host` header is set. Use `kubectl` to apply the following yaml:
+    notes: >
+      To easily copy a yaml snippet into a command, copy it to the clipboard then run `pbcopy | kubectl apply -f -`.
+    docsValues:
+      RenderAsYaml: "true"
   - curl:
       path: /
       statusCode: 200
       service:
         name: gateway-proxy
         namespace: gloo-system
-    docs:
-      title: Test the route
-      description: |
-        To test this route, we can open the application in a browser by port-forwarding the gateway proxy, like so:
+    title: Test the route
+    description: |
+      To test this route, we can open the application in a browser by port-forwarding the gateway proxy, like so:
 
-        `kubectl port-forward -n gloo-system deploy/gateway-proxy 8080`
+      `kubectl port-forward -n gloo-system deploy/gateway-proxy 8080`
 
-        Now you can open the application in your browser by navigating to `localhost:8080`.
+      Now you can open the application in your browser by navigating to `localhost:8080`.
 
-        We can also invoke a curl command to ensure the service is available.
+      We can also invoke a curl command to ensure the service is available.
 
-        `curl localhost:8080`
+      `curl localhost:8080`
 
-        This should return a 200 and the html for the page.
+      This should return a 200 and the html for the page.

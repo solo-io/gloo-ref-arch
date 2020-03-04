@@ -1,4 +1,4 @@
-_This doc was automatically created by Valet 0.4.3-6-gc0254cf from the workflow defined in workflow.yaml. To deploy the demo, you can use `valet ensure -f workflow.yaml` from this directory, or execute the steps manually. Do not modify this file directly, it will be overwritten the next time the docs are generated._
+_This doc was automatically created by Valet 0.4.3-7-g78e3ed9 from the workflow defined in workflow.yaml. To deploy the demo, you can use `valet ensure -f workflow.yaml` from this directory, or execute the steps manually. Do not modify this file directly, it will be overwritten the next time the docs are generated._
 
 # Using TLS between Client and Gateway Proxy
 
@@ -8,9 +8,9 @@ In this workflow, we'll set up a simple application that showcases how Gloo can 
 This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace.
 
 
-## Deploy the Petstore Application
+ 
 
-First, let's deploy the petstore application.
+
 
  
 
@@ -65,9 +65,9 @@ This should return a 200 and the following json:
 [{"id":1,"name":"Dog","status":"available"},{"id":2,"name":"Cat","status":"pending"}]
 ```
 
-## Setup TLS between the client and the gateway proxy
+ 
 
-We need to acquire a certificate, and then add it as a configuration on our virtual service.
+
 
  
 

@@ -2,43 +2,40 @@ steps:
   - apply:
       manifest:
         path: https://raw.githubusercontent.com/solo-io/gloo/v1.2.9/example/petstore/petstore.yaml
-    docs:
-      title: Deploy the Petstore Application
-      description: >
-        First, let's deploy the petstore application. We can run the following commands to deploy
-        the application to Kubernetes. These yaml files contain the Kubernetes deployment and service definitions for the application.
-      notes: >
-        Make sure these pods are running by executing `kubectl get pod` and checking the readiness status for the two petclinic pods. It
-        may take a few minutes to download the containers, depending on your connection.
+    title: Deploy the Petstore Application
+    description: >
+      First, let's deploy the petstore application. We can run the following commands to deploy
+      the application to Kubernetes. These yaml files contain the Kubernetes deployment and service definitions for the application.
+    notes: >
+      Make sure these pods are running by executing `kubectl get pod` and checking the readiness status for the two petclinic pods. It
+      may take a few minutes to download the containers, depending on your connection.
   # openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=animalstore.example.com"
   # kubectl create secret tls animal-certs --key tls.key --cert tls.crt --namespace gloo-system --dry-run  -oyaml > tls-sni-secret.yaml
   - apply:
       manifest:
         path: tls-sni-secret.yaml
-    docs:
-      title: Create a TLS secret with the SNI domain
-      description: |
-        For demonstration purposes, we will generate a self-signed cert locally using `openssl`:
+    title: Create a TLS secret with the SNI domain
+    description: |
+      For demonstration purposes, we will generate a self-signed cert locally using `openssl`:
 
-        `openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=animalstore.example.com"`
+      `openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=animalstore.example.com"`
 
-        Then, we can store the certificate in Kubernetes as a `tls` type secret. This can be created with the following command:
+      Then, we can store the certificate in Kubernetes as a `tls` type secret. This can be created with the following command:
 
-        `kubectl create secret tls animal-certs --key tls.key --cert tls.crt --namespace gloo-system`
+      `kubectl create secret tls animal-certs --key tls.key --cert tls.crt --namespace gloo-system`
 
-        For convenience, this secret has been saved and can be applied as a manifest:
+      For convenience, this secret has been saved and can be applied as a manifest:
   - apply:
       manifest:
         path: vs-animal.yaml
-    docs:
-      title: Create a virtual service with an SSL and SNI configuration
-      description: >
-        We can create a route with TLS by providing an SSL config in the virtual service, and we can help Envoy
-        route to specific domains by configuring SNI.
-      notes: >
-        To easily copy a yaml snippet into a command, copy it to the clipboard then run `pbcopy | kubectl apply -f -`.
-    values:
-      RenderAsYaml: true
+    title: Create a virtual service with an SSL and SNI configuration
+    description: >
+      We can create a route with TLS by providing an SSL config in the virtual service, and we can help Envoy
+      route to specific domains by configuring SNI.
+    notes: >
+      To easily copy a yaml snippet into a command, copy it to the clipboard then run `pbcopy | kubectl apply -f -`.
+    docsValues:
+      RenderAsYaml: "true"
   # curl -kv -H "Host: animalstore.example.com" $(glooctl proxy url --port https)/animals
   - curl:
       path: /animals
@@ -48,15 +45,14 @@ steps:
         namespace: gloo-system
         port: https
       host: animalstore.example.com
-    docs:
-      title: Test the route
-      description: |
-        To test this route, we will leverage glooctl to help determine the https port, and issue a curl request to it:
+    title: Test the route
+    description: |
+      To test this route, we will leverage glooctl to help determine the https port, and issue a curl request to it:
 
-        `curl -k -H "animalstore.example.com" $(glooctl proxy url --port https)/sample-route-1`
+      `curl -k -H "animalstore.example.com" $(glooctl proxy url --port https)/sample-route-1`
 
-        Note that we used the `port` flag to indicate https. This should return a 200 and the following json:
+      Note that we used the `port` flag to indicate https. This should return a 200 and the following json:
 
-        ```
-        [{"id":1,"name":"Dog","status":"available"},{"id":2,"name":"Cat","status":"pending"}]
-        ```
+      ```
+      [{"id":1,"name":"Dog","status":"available"},{"id":2,"name":"Cat","status":"pending"}]
+      ```

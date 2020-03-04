@@ -1,4 +1,4 @@
-_This doc was automatically created by Valet 0.4.3-6-gc0254cf from the workflow defined in workflow.yaml. To deploy the demo, you can use `valet ensure -f workflow.yaml` from this directory, or execute the steps manually. Do not modify this file directly, it will be overwritten the next time the docs are generated._
+_This doc was automatically created by Valet 0.4.3-7-g78e3ed9 from the workflow defined in workflow.yaml. To deploy the demo, you can use `valet ensure -f workflow.yaml` from this directory, or execute the steps manually. Do not modify this file directly, it will be overwritten the next time the docs are generated._
 
 # Extending a Monlithic Application with Gloo
 
@@ -8,9 +8,9 @@ In this workflow, we'll set up the petclinic application, which consists of a ba
 This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace.
 
 
-## Deploy the Petclinic Monolith
+ 
 
-First, let's deploy the petclinic monolith.
+
 
  
 
@@ -68,9 +68,9 @@ We can also invoke a curl command to ensure the service is available.
 This should return a 200 and the html for the page.
 
 
-## Delegate the route to a route table
+ 
 
-Now we'll create this route in a route table. Then we'll change the virtual service route to use a `delegateAction` instead of the `routeAction`. This should behave exactly as before. The advantage to separating the route with a route table is that it provides the ability to utilize Kubernetes RBAC to allow users to own their own route tables, while enabling an admin to manage the virtual service and associated domains.
+
 
  
 

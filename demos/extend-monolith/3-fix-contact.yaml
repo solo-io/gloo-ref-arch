@@ -8,36 +8,33 @@ steps:
             envVar: AWS_ACCESS_KEY_ID
           aws_secret_access_key:
             envVar: AWS_SECRET_ACCESS_KEY
-    docs:
-      title: Create a secret with your AWS credentials
-      description: >
-        In order to connect to a lambda, we need to provide AWS credentials to Envoy. We'll store those
-        credentials in a kubernetes secret. Assuming you have the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
-        environment variables defined, you can use the following command.
+    title: Create a secret with your AWS credentials
+    description: >
+      In order to connect to a lambda, we need to provide AWS credentials to Envoy. We'll store those
+      credentials in a kubernetes secret. Assuming you have the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
+      environment variables defined, you can use the following command.
   - apply:
       manifest:
         path: upstream-aws.yaml
-    docs:
-      title: Create a Gloo upstream for AWS
-      description: >
-        Now we need to create an upstream in Gloo, representing a routing destination in AWS and referencing the credentials.
-      notes: >
-        Gloo function discovery will run as soon as this upstream is added, and it should quickly detect lambdas in your
-        account. Those lambdas will be added as discovered functions on the upstream.
-    values:
-      RenderAsYaml: true
+    title: Create a Gloo upstream for AWS
+    description: >
+      Now we need to create an upstream in Gloo, representing a routing destination in AWS and referencing the credentials.
+    notes: >
+      Gloo function discovery will run as soon as this upstream is added, and it should quickly detect lambdas in your
+      account. Those lambdas will be added as discovered functions on the upstream.
+    docsValues:
+      RenderAsYaml: "true"
   - apply:
       manifest:
         path: vs-3.yaml
-    docs:
-      title: Add a route to a lambda
-      description: >
-        Now that we have modeled the AWS lambda destination, we can route to it. Let's update the virtual service
-        with a new route so that requests to the contact page are now forwarded to a lambda. In this case, we've
-        deployed a lambda to our AWS account called `contact-form:3`. The json response will contain a field
-        with html; we specify to transform the response, so that html is returned from Envoy.
-    values:
-      RenderAsYaml: true
+    title: Add a route to a lambda
+    description: >
+      Now that we have modeled the AWS lambda destination, we can route to it. Let's update the virtual service
+      with a new route so that requests to the contact page are now forwarded to a lambda. In this case, we've
+      deployed a lambda to our AWS account called `contact-form:3`. The json response will contain a field
+      with html; we specify to transform the response, so that html is returned from Envoy.
+    docsValues:
+      RenderAsYaml: "true"
   - curl:
       path: /contact.html
       statusCode: 200
@@ -46,15 +43,14 @@ steps:
       service:
         name: gateway-proxy
         namespace: gloo-system
-    docs:
-      title: Test the new route
-      description: |
-        Now that we've defined this route, we can navigate to the contact page and should now see a form: `localhost:8080/contact.html`.
+    title: Test the new route
+    description: |
+      Now that we've defined this route, we can navigate to the contact page and should now see a form: `localhost:8080/contact.html`.
 
-        As before, we can also test this with curl:
+      As before, we can also test this with curl:
 
-        `curl localhost:8080/contact.html`
+      `curl localhost:8080/contact.html`
 
-        This should return a 200 response code.
-      notes: >
-        In local testing, it can take up to 30 seconds for the route to start working.
+      This should return a 200 response code.
+    notes: >
+      In local testing, it can take up to 30 seconds for the route to start working.

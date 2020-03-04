@@ -6,7 +6,7 @@ steps:
       manifest:
         path: upstream-2.yaml
     values:
-      RenderAsYaml: true
+      RenderAsYaml: "true"
   - restartPods:
       namespace: gloo-system
       labels:

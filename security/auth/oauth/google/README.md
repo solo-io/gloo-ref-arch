@@ -1,16 +1,16 @@
-_This doc was automatically created by Valet 0.4.3-6-gc0254cf from the workflow defined in workflow.yaml. To deploy the demo, you can use `valet ensure -f workflow.yaml` from this directory, or execute the steps manually. Do not modify this file directly, it will be overwritten the next time the docs are generated._
+_This doc was automatically created by Valet 0.4.3-7-g78e3ed9 from the workflow defined in workflow.yaml. To deploy the demo, you can use `valet ensure -f workflow.yaml` from this directory, or execute the steps manually. Do not modify this file directly, it will be overwritten the next time the docs are generated._
 
 # Oauth with Google
 
 In this workflow, we'll deploy the petclinic application with Gloo. Then we'll set up oauth with Google as an OIDC provider.
 
 
-This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace. 
+This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace.
 
 
-## Deploy the Petclinic Monolith
+ 
 
-First, let's deploy the petclinic monolith.
+
 
  
 
@@ -69,9 +69,9 @@ We can also invoke a curl command to ensure the service is available.
 This should return a 200 and the html for the page.
 
 
-## Setup oauth
+ 
 
-Now we will update the virtual service to require authentication via oauth with Google as the OIDC provider.
+
 
 ### Store the google client secret
 

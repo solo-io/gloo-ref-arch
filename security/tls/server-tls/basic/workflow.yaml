@@ -1,23 +1,20 @@
 # Pre-requisites:
 # - `valet ensure -f ../../common/workflows/deploy-gloo-enterprise.yaml`
 
-docs:
-  title: Using TLS between Client and Gateway Proxy
-  description: >
-    In this workflow, we'll set up a simple application that showcases how Gloo can be used to establish TLS between
-    users or clients and the gateway proxy. In this case, SSL is terminated at the proxy and the request is forwarded
-    to the upstream service with standard http.
-  notes: >
-    This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace.
+title: Using TLS between Client and Gateway Proxy
+description: >
+  In this workflow, we'll set up a simple application that showcases how Gloo can be used to establish TLS between
+  users or clients and the gateway proxy. In this case, SSL is terminated at the proxy and the request is forwarded
+  to the upstream service with standard http.
+notes: >
+  This workflow assumes you already have a Kubernetes cluster, and you've installed Gloo Enterprise to the gloo-system namespace.
 steps:
   - workflow:
       path: 1-deploy-app.yaml
-    docs:
-      title: Deploy the Petstore Application
-      description: First, let's deploy the petstore application.
+    title: Deploy the Petstore Application
+    description: First, let's deploy the petstore application.
   - workflow:
       path: 2-setup-mtls.yaml
-    docs:
-      title: Setup TLS between the client and the gateway proxy
-      description: >
-        We need to acquire a certificate, and then add it as a configuration on our virtual service.
+    title: Setup TLS between the client and the gateway proxy
+    description: >
+      We need to acquire a certificate, and then add it as a configuration on our virtual service.

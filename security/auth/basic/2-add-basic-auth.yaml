@@ -2,37 +2,34 @@ steps:
   - apply:
       manifest:
         path: auth-config.yaml
-    docs:
-      title: Create an auth config
-      description: >
-        Now we can create an auth config in gloo to represent basic auth. Basic auth requires credentials in the APR format.
-        We can generate a password with: `htpasswd -nbm user password`. This outputs something like `user:$apr1$TYiryv0/$8BvzLUO9IfGPGGsPnAgSu1`,
-        which contains the salted username and password that we'll include in the auth config. Use `kubectl` to apply the following yaml:
-    values:
-      RenderAsYaml: true
+    title: Create an auth config
+    description: >
+      Now we can create an auth config in gloo to represent basic auth. Basic auth requires credentials in the APR format.
+      We can generate a password with: `htpasswd -nbm user password`. This outputs something like `user:$apr1$TYiryv0/$8BvzLUO9IfGPGGsPnAgSu1`,
+      which contains the salted username and password that we'll include in the auth config. Use `kubectl` to apply the following yaml:
+    docsValues:
+      RenderAsYaml: "true"
   - apply:
       manifest:
         path: vs-petstore-2.yaml
-    docs:
-      title: Update the virtual service to add auth to the routes
-      description: >
-        Now we can update the virtual service. In this case, we'll add the auth config to all routes on the virtual service.
-    values:
-      RenderAsYaml: true
+    title: Update the virtual service to add auth to the routes
+    description: >
+      Now we can update the virtual service. In this case, we'll add the auth config to all routes on the virtual service.
+    docsValues:
+      RenderAsYaml: "true"
   - curl:
       path: /sample-route-1
       statusCode: 401 # Unauthorized
       service:
         name: gateway-proxy
         namespace: gloo-system
-    docs:
-      title: Test the route
-      description: |
-        If we curl the request as before:
+    title: Test an unauthorized request
+    description: |
+      If we curl the request as before:
 
-        `curl $(glooctl proxy url)/sample-route-1`
+      `curl $(glooctl proxy url)/sample-route-1`
 
-        This should now return a 401 Unauthorized error, since the request doesn't contain the authorization header.
+      This should now return a 401 Unauthorized error, since the request doesn't contain the authorization header.
   - curl:
       path: /sample-route-1
       statusCode: 200 # Unauthorized
@@ -41,17 +38,16 @@ steps:
         namespace: gloo-system
       headers:
         Authorization: "basic dXNlcjpwYXNzd29yZA=="
-    docs:
-      title: Test the route
-      description: |
-        We can add the authorization header to the request to satisfy the auth check. First, encode the `user:password` with this command:
+    title: Test an authorized request
+    description: |
+      We can add the authorization header to the request to satisfy the auth check. First, encode the `user:password` with this command:
 
-        `echo -n "user:password" | base64`
+      `echo -n "user:password" | base64`
 
-        Now we can issue a curl request with this value as the authorization header:
+      Now we can issue a curl request with this value as the authorization header:
 
-        `curl -H "Authorization: basic dXNlcjpwYXNzd29yZA==" $(glooctl proxy url)/sample-route-1`
+      `curl -H "Authorization: basic dXNlcjpwYXNzd29yZA==" $(glooctl proxy url)/sample-route-1`
 
-        This should return a 200 and the following json:
-        ```
-        [{"id":1,"name":"Dog","status":"available"},{"id":2,"name":"Cat","status":"pending"}]
+      This should return a 200 and the following json:
+      ```
+      [{"id":1,"name":"Dog","status":"available"},{"id":2,"name":"Cat","status":"pending"}]
