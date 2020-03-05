@@ -21,14 +21,14 @@ Demos:
 Feature Highlights:
 * Platform
   * Delegation
-    * [Basic](platform/delegation/basic)
+    * [Simple](platform/delegation/simple)
 * Security
   * TLS
     * Server TLS
       * [Basic](security/tls/server-tls/basic)
-      * [SNI](security/tls/server-tls/sni)
+      * [Work in Progress] [SNI](security/tls/server-tls/sni)
     * [Upstream TLS](security/tls/upstream-tls)
   * Auth
     * [Basic](security/auth/basic)
     * OAuth
-      * [Google](security/auth/oauth/google)
+      * [Work in Progress] [Google](security/auth/oauth/google)
