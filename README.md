@@ -19,9 +19,16 @@ Demos:
 * [Petclinic - Migrating to Microservices](demos/extend-monolith/README.md)
 
 Feature Highlights:
+* Platform
+  * Delegation
+    * [Basic](platform/delegation/basic)
 * Security
   * TLS
     * Server TLS
       * [Basic](security/tls/server-tls/basic)
       * [SNI](security/tls/server-tls/sni)
     * [Upstream TLS](security/tls/upstream-tls)
+  * Auth
+    * [Basic](security/auth/basic)
+    * OAuth
+      * [Google](security/auth/oauth/google)
