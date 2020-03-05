@@ -1,4 +1,4 @@
-_This doc was automatically created by Valet 0.4.3-8-g87110e5 from the workflow defined in workflow.yaml. To deploy the demo, you can use `valet ensure -f workflow.yaml` from this directory, or execute the steps manually. Do not modify this file directly, it will be overwritten the next time the docs are generated._
+_This doc was automatically created by Valet 0.4.3-12-g3223901 from the workflow defined in workflow.yaml. To deploy the demo, you can use `valet ensure -f workflow.yaml` from this directory, or execute the steps manually. Do not modify this file directly, it will be overwritten the next time the docs are generated._
 
 # Oauth with Google
 
@@ -104,4 +104,35 @@ spec:
           name: google-oauth
           namespace: gloo-system
         issuer_url: https://accounts.google.com
+```
+
+### Update the virtual service
+
+Finally, we can update the virtual service to apply the auth config to the route for the petclinic application. Then, when accessing the petclinic app in the browser, you will be asked to log in.
+
+
+```yaml
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  name: petclinic
+  namespace: gloo-system
+spec:
+  virtualHost:
+    domains:
+      # We can use the domain "*" to match on any domain, avoiding the need for a host / host header when testing the route.
+      - "*"
+    routes:
+      - matchers:
+          - prefix: /
+        routeAction:
+          single:
+            upstream:
+              name: default-petclinic-8080
+              namespace: gloo-system
+    options:
+      extauth:
+        configRef:
+          name: google-oauth
+          namespace: gloo-system
 ```

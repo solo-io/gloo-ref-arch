@@ -40,7 +40,7 @@ steps:
         This should now return a 401 Unauthorized error, since the request doesn't contain the authorization header.
   - curl:
       path: /sample-route-1
-      statusCode: 200 # Unauthorized
+      statusCode: 200
       service:
         name: gateway-proxy
         namespace: gloo-system

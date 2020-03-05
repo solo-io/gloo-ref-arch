@@ -20,7 +20,7 @@ steps:
       template:
         path: auth-config.tmpl
     values:
-      ClientId: "env:CLIENT_ID"
+      ClientId: "env:GOOGLE_CLIENT_ID"
     title: Store the auth config
     description:
       - >
@@ -29,4 +29,14 @@ steps:
         from the previous step.
     docsValues:
       ClientId: "<CLIENT_ID>"
+      RenderAsYaml: "true"
+  - apply:
+      manifest:
+        path: vs-2.yaml
+    title: Update the virtual service
+    description:
+      - >
+        Finally, we can update the virtual service to apply the auth config to the route for the petclinic application. Then,
+        when accessing the petclinic app in the browser, you will be asked to log in.
+    docsValues:
       RenderAsYaml: "true"
