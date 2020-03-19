@@ -1,4 +1,4 @@
-_This doc was automatically created by Valet 0.4.3-15-g4b36257 from the workflow defined in workflow.yaml. To deploy the demo, you can use `valet ensure -f workflow.yaml` from this directory, or execute the steps manually. Do not modify this file directly, it will be overwritten the next time the docs are generated._
+_This doc was automatically created by Valet 0.5.0 from the workflow defined in workflow.yaml. To deploy the demo, you can use `valet ensure -f workflow.yaml` from this directory, or execute the steps manually. Do not modify this file directly, it will be overwritten the next time the docs are generated._
 
 # Extending a Monlithic Application with Gloo
 
@@ -142,7 +142,7 @@ In order to connect to a lambda, we need to provide AWS credentials to Envoy. We
 
 
 ```
-kubectl create secret generic -n  gloo-system aws-creds --from-env=aws_secret_access_key=$AWS_SECRET_ACCESS_KEY --from-env=aws_access_key_id=$AWS_ACCESS_KEY_ID
+kubectl create secret generic -n  gloo-system aws-creds --from-env=aws_access_key_id=$AWS_ACCESS_KEY_ID --from-env=aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
 ```
 
 ### Create a Gloo upstream for AWS
