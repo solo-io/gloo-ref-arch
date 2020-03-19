@@ -6,12 +6,14 @@ metadata:
 spec:
   virtualHost:
     domains:
-    - '*'
+      - '*'
     routes:
-    - matchers:
-      - prefix: /sample-route-1
-      routeAction:
-        single:
-          upstream:
-            name: default-petstore-8080
-            namespace: gloo-system
+      - matchers:
+          - exact: /sample-route-1
+        routeAction:
+          single:
+            upstream:
+              name: default-petstore-8080
+              namespace: gloo-system
+        options:
+          prefixRewrite: /api/pets
