@@ -15,20 +15,49 @@ Using Valet, each of these can be automatically executed or stepped through. By 
 
 ## Table of Contents
 
-Demos:
+### Standard Demos
+
 * [Petclinic - Migrating to Microservices](demos/extend-monolith)
 
-Feature Highlights:
-* Platform
-  * Delegation
-    * [Simple](platform/delegation/simple)
-* Security
-  * TLS
-    * Server TLS
-      * [Basic](security/tls/server-tls/basic)
-      * [Work in Progress] [SNI](security/tls/server-tls/sni)
-    * [Upstream TLS](security/tls/upstream-tls)
-  * Auth
-    * [Basic](security/auth/basic)
-    * OAuth
-      * [Work in Progress] [Google](security/auth/oauth/google)
+### Platform Operations
+
+* Delegation
+  * [Simple](platform/delegation/simple)
+* [Multiple Gateways](platform/multiple-gateways)
+* Multiple Proxies
+  * [Internal-External](platform/multiple-proxies/internal-external)
+* [Namespaced Gloo](platform/namespaced)
+* [Progressive Delivery / Canary Rollout](platform/prog-delivery)
+
+### Security Examples
+
+* [Access Logging](security/access-log)
+* [Data Loss Prevention](security/dlp)
+
+#### Rate Limiting
+
+* [Basic](security/rate-limit/basic)
+* [Multiple Rules and Priority](security/rate-limit/rule-priority)
+* [From JWT Claims](security/rate-limit/from-jwt-claims)
+
+#### Auth
+
+* [Basic](security/auth/basic)
+* OAuth
+  * [Google](security/auth/oauth/google)
+* [OPA](security/auth/opa)
+  
+#### (m)TLS
+
+* Server TLS
+  * [Basic](security/tls/server-tls/basic)
+  * [SNI](security/tls/server-tls/sni)
+* [Upstream TLS](security/tls/upstream-tls)
+
+#### WAF    
+  
+* [Basic](security/waf/basic)
+
+### Traffic Management
+
+* [GRPC](traffic-management/grpc)

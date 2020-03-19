@@ -1,0 +1,5 @@
+steps:
+  - workflow:
+      path: 1-deploy-app.yaml
+  - workflow:
+      path: 2-start-rate-limit.yaml
