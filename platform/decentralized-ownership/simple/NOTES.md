@@ -7,4 +7,4 @@ In the simple case, we can have:
 Two limitations of this approach:
 * Hard to prevent one team's config from interfering with another 
   * For example, don't want another team creating a VS with the same domain
-* 
+* Hard to enforce common config at the vhost level / across all routes

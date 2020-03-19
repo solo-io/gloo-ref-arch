@@ -7,14 +7,9 @@ spec:
   virtualHost:
     domains:
     - '*'
-    options:
-      extauth:
-        configRef:
-          name: jwt-opa
-          namespace: gloo-system
     routes:
     - matchers:
-      - prefix: /
+      - prefix: /sample-route-1
       routeAction:
         single:
           upstream:
