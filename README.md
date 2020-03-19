@@ -26,8 +26,8 @@ Valet can be installed from source(https://github.com/solo-io/valet) or can be d
 
 ### Platform Operations
 
-* Delegation
-  * [Simple](platform/delegation/simple)
+* Decentralized Config Management
+  * [Simple Delegation](platform/delegation/simple)
 * [Multiple Gateways](platform/multiple-gateways)
 * Multiple Proxies
   * [Internal-External](platform/multiple-proxies/internal-external)
