@@ -1,0 +1,21 @@
+values:
+  EchoName: echo-5
+  EchoNamespace: echo-5
+steps:
+  - apply:
+      template:
+        path: echo-template.yaml
+  - apply:
+      template:
+        path: upstream-template.yaml
+  - apply:
+      template:
+        path: vs-template.yaml
+  - curl:
+      service:
+        name: gateway-proxy
+        namespace: gloo-system
+      path: /
+      statusCode: 404
+      responseBody: "echo-5"
+      host: echo-5.example.com

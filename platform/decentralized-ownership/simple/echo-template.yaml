@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .EchoNamespace }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .EchoName }}
+  namespace: {{ .EchoNamespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .EchoName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .EchoName }}
+    spec:
+      containers:
+        - image: hashicorp/http-echo
+          args:
+            - -text={{ .EchoName }}
+            - -listen=:8080
+          imagePullPolicy: Always
+          name: {{ .EchoName }}
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .EchoName }}
+  namespace: {{ .EchoNamespace }}
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app: {{ .EchoName }}
