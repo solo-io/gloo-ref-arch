@@ -8,10 +8,10 @@ steps:
         path: upstream-2.yaml
     values:
       RenderAsYaml: "true"
-  - restartPods:
-      namespace: gloo-system
-      labels:
-        - "gloo=gateway-proxy"
+#  - restartPods:
+#      namespace: gloo-system
+#      labels:
+#        - "gloo=gateway-proxy"
   - curl:
       service:
         name: gateway-proxy

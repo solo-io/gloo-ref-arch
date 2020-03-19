@@ -1,0 +1,62 @@
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"gateway.solo.io/v1","kind":"VirtualService","metadata":{"annotations":{},"name":"default","namespace":"gloo-system"},"spec":{"virtualHost":{"domains":["*"],"options":{"extauth":{"configRef":{"name":"basic-auth","namespace":"gloo-system"}},"transformations":{"requestTransformation":{"transformationTemplate":{"headers":{"foo":{"text":"bar"}}}}},"waf":{"ruleSets":[{"ruleStr":"# Turn rule engine on\nSecRuleEngine On\nSecRule REQUEST_HEADERS:User-Agent \"scammer\" \"deny,status:403,id:107,phase:1,msg:'blocked scammer'\"\n"}]}},"routes":[{"matchers":[{"prefix":"/"}],"routeAction":{"single":{"upstream":{"name":"default-petclinic-8080","namespace":"gloo-system"}}}}]}}}
+  creationTimestamp: "2020-03-12T15:22:19Z"
+  generation: 10
+  name: default
+  namespace: gloo-system
+  resourceVersion: "1211737"
+  selfLink: /apis/gateway.solo.io/v1/namespaces/gloo-system/virtualservices/default
+  uid: b3841291-f3cd-431f-9985-802775c7ac93
+spec:
+  virtualHost:
+    domains:
+    - '*'
+    options:
+      dlp:
+        actions:
+        - actionType: SSN
+        - actionType: ALL_CREDIT_CARDS
+      extauth:
+        configRef:
+          name: basic-auth
+          namespace: gloo-system
+      transformations:
+        requestTransformation:
+          transformationTemplate:
+            headers:
+              foo:
+                text: bar
+      waf:
+        ruleSets:
+        - ruleStr: |
+            # Turn rule engine on
+            SecRuleEngine On
+            SecRule REQUEST_HEADERS:User-Agent "scammer" "deny,status:403,id:107,phase:1,msg:'blocked scammer'"
+    routes:
+    - matchers:
+      - prefix: /
+      options:
+        autoHostRewrite: true
+        faults:
+          abort:
+            httpStatus: 503
+            percentage: 2.5
+          delay:
+            fixedDelay: 5s
+            percentage: 5.3
+      routeAction:
+        single:
+          upstream:
+            name: json-upstream
+            namespace: gloo-system
+status:
+  reported_by: gateway
+  state: 1
+  subresource_statuses:
+    '*v1.Proxy.gloo-system.gateway-proxy':
+      reported_by: gloo
+      state: 1

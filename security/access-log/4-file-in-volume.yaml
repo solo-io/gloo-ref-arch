@@ -1,0 +1,12 @@
+steps:
+  - patch:
+      path: gateway-proxy-patch.yaml
+      kubeType: deployment
+      name: gateway-proxy
+      namespace: gloo-system
+      patchType: strategic
+    values:
+      Namespace: gloo-system
+  - apply:
+      manifest:
+        path: gateway-4.yaml

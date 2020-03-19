@@ -1,0 +1,11 @@
+spec:
+  template:
+    spec:
+      containers:
+        - name: gateway-proxy
+          volumeMounts:
+            - mountPath: /etc/access-logs/
+              name: access-logs
+      volumes:
+        - name: access-logs
+          emptyDir: {}

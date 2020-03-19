@@ -1,0 +1,7 @@
+steps:
+  - dnsEntry:
+      hostedZone: corp.solo.io.
+      domain: "*.valet-ap5rh.corp.solo.io"
+      service:
+        name: gateway-proxy
+        namespace: gloo-system

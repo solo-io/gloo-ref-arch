@@ -1,0 +1,61 @@
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  name: petstore
+  namespace: gloo-system
+spec:
+  virtualHost:
+    domains:
+      - '*'
+    routes:
+      - matchers:
+          - exact: /sample-route-1
+        routeAction:
+          single:
+            upstream:
+              name: default-petstore-8080
+              namespace: gloo-system
+        options:
+          prefixRewrite: /api/pets
+    options:
+      jwt:
+        providers:
+          solo:
+            tokenSource:
+              headers:
+                - header: x-token
+              queryParams:
+                - token
+            claimsToHeaders:
+              - claim: type
+                header: x-type
+              - claim: number
+                header: x-number
+            issuer: solo.io
+            jwks:
+              local:
+                key: |
+                  -----BEGIN PUBLIC KEY-----
+                  MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxdil+UiTSKYKV90YkeZ/
+                  9CWvb4XfUgqYDeW/OG1Le+/BvSVkAFc1s3Fg0l9Zo4yvS4OGQszsNGJNl1mYya/L
+                  sSTTD7suKLXY7FBTaBB8CQvvW873yRij1F4EaygOJ1ujuFmpgBGvQLSS5rceNaCl
+                  Qzo+bmf3z0UGbhCxgsjDsJK2/aW2D/3dep/kF1GyEOGz8fewnwVp0zVyuS4UMidV
+                  2cdnAobX2GvPwpjAeIeqhHG3HX4fen+TwU8rkej3y4efKHNj/GbKQmtt2EoOhEox
+                  iK/JALlhQNAJqYn+81amRM7wGWeLEByt0+mwyAfnShOr6MFwrhQjsm4orwAx7yHB
+                  jwIDAQAB
+                  -----END PUBLIC KEY-----
+      ratelimit:
+        rateLimits:
+          # generate descriptors for Rule 1 and 2
+          - actions:
+              - requestHeaders:
+                  descriptorKey: type
+                  headerName: x-type
+          # generate descriptors for Rule 3
+          - actions:
+              - requestHeaders:
+                  descriptorKey: type
+                  headerName: x-type
+              - requestHeaders:
+                  descriptorKey: number
+                  headerName: x-number

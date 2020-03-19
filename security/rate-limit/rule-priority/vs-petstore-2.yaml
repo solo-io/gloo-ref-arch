@@ -1,0 +1,35 @@
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  name: petstore
+  namespace: gloo-system
+spec:
+  virtualHost:
+    domains:
+      - '*'
+    routes:
+      - matchers:
+          - exact: /sample-route-1
+        routeAction:
+          single:
+            upstream:
+              name: default-petstore-8080
+              namespace: gloo-system
+        options:
+          prefixRewrite: /api/pets
+    options:
+      ratelimit:
+        rateLimits:
+          # generate descriptors for Rule 1 and 2
+          - actions:
+              - requestHeaders:
+                  descriptorKey: type
+                  headerName: x-type
+          # generate descriptors for Rule 3
+          - actions:
+              - requestHeaders:
+                  descriptorKey: type
+                  headerName: x-type
+              - requestHeaders:
+                  descriptorKey: number
+                  headerName: x-number
