@@ -1,7 +1,7 @@
 apiVersion: gateway.solo.io/v1
 kind: VirtualService
 metadata:
-  name: default
+  name: petstore
   namespace: gloo-system
 spec:
   virtualHost:
@@ -18,5 +18,5 @@ spec:
       routeAction:
         single:
           upstream:
-            name: json-upstream
+            name: default-petstore-8080
             namespace: gloo-system

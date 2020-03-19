@@ -1,0 +1,36 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: echo-2
+  template:
+    metadata:
+      labels:
+        app: echo-2
+    spec:
+      containers:
+        - image: hashicorp/http-echo
+          args:
+            - -text=echo-2
+            - -listen=:8080
+          imagePullPolicy: Always
+          name: echo
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echo-2
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app: echo-2
