@@ -17,5 +17,4 @@ steps:
         namespace: gloo-system
       path: /
       statusCode: 404
-      responseBody: "echo-5"
       host: echo-5.example.com

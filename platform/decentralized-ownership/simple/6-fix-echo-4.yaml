@@ -1,0 +1,56 @@
+values:
+  EchoName: echo-4
+  EchoNamespace: echo-4
+steps:
+  - delete:
+      namespace:
+        name: echo-4
+  - apply:
+      template:
+        path: echo-template.yaml
+  - apply:
+      template:
+        path: upstream-template.yaml
+  - apply:
+      template:
+        path: vs-template.yaml
+  - curl:
+      service:
+        name: gateway-proxy
+        namespace: gloo-system
+      path: /
+      statusCode: 200
+      responseBody: "echo-1"
+      host: echo-1.example.com
+  - curl:
+      service:
+        name: gateway-proxy
+        namespace: gloo-system
+      path: /
+      statusCode: 200
+      responseBody: "echo-2"
+      host: echo-2.example.com
+  - curl:
+      service:
+        name: gateway-proxy
+        namespace: gloo-system
+      path: /
+      statusCode: 200
+      responseBody: "echo-3"
+      host: echo-3.example.com
+  - curl:
+      service:
+        name: gateway-proxy
+        namespace: gloo-system
+      path: /
+      statusCode: 200
+      responseBody: "echo-4"
+      host: echo-4.example.com
+  - curl:
+      service:
+        name: gateway-proxy
+        namespace: gloo-system
+      path: /
+      statusCode: 200
+      responseBody: "echo-5"
+      host: echo-5.example.com

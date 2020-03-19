@@ -1,0 +1,13 @@
+steps:
+  - workflow:
+      path: 1-deploy-echo-1.yaml
+  - workflow:
+      path: 2-deploy-echo-2.yaml
+  - workflow:
+      path: 3-deploy-echo-3.yaml
+  - workflow:
+      path: 4-deploy-echo-4.yaml
+  - workflow:
+      path: 5-deploy-echo-5.yaml
+  - workflow:
+      path: 6-fix-echo-4.yaml

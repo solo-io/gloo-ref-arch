@@ -19,3 +19,10 @@ steps:
       statusCode: 200
       responseBody: "echo-3"
       host: echo-3.example.com
+  - curl:
+      service:
+        name: gateway-proxy
+        namespace: gloo-system
+      path: /
+      statusCode: 404
+      host: echo-4.example.com
