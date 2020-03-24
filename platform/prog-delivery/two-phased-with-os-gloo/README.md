@@ -201,16 +201,28 @@ Once we apply these two resources, we can start to send traffic to the applicati
 version:v1
 ```
 
-## Canary rollout strategy
+## Rollout Strategy
 
-For our canary rollout of the `v2` echo service, we're going to follow a two-phased approach. 
+Now we have a new version `v2` of the echo application that we wish to roll out. We know that when the  
+rollout is complete, we are going to end up with this picture:
 
-In the first phase, we want to initially roll out the new version of the service, and make it available to a small 
-fraction of users. To start, we'll route to `v2` when a header is supplied in the incoming request. We can take this 
-one step further by integrating with extauth and routing to `v2` when a claim is provided in a JWT. 
+![](4-decommissioning-v1/end-state.png)
 
-When the initial testing is complete, we'll move on to phase 2, where we'll progressively shift all traffic over to v2, 
-before eventually decommissioning v1.  
+However, to get there, we may want to perform a few rounds of testing to ensure the new version of the application
+meets certain correctness and/or performance acceptance criteria. In this post, we'll introduce a two-phased approach to 
+canary rollout with Gloo, that could be used to satisfy the vast majority of acceptance tests. 
+
+In the first phase, we'll perform smoke and correctness tests by routing a small segment of the traffic to the new version 
+of the application. In this demo, we'll use a header `stage: canary` to trigger routing to the new service, though in 
+practice it may be desirable to make this decision based on another part of the request, such as the claim in a verified JWT. 
+
+In the second phase, we've already established correctness, so we are ready to shift all of the traffic over to the new 
+version of the application. We'll configure weighted destinations, and shift the traffic while monitoring certain business 
+metrics to ensure the service quality remains at acceptable levels. Once 100% of the traffic is shifted to the new version, 
+the old version can be decommissioned. 
+
+In practice, it may be desirable to only use one of the phases for testing, in which case the other phase can be 
+skipped. 
 
 ## Phase 1: Initial canary rollout of v2
 
