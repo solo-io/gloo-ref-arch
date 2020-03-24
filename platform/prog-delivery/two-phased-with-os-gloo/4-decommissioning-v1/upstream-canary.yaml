@@ -1,0 +1,13 @@
+apiVersion: gloo.solo.io/v1
+kind: Upstream
+metadata:
+  name: echo-canary
+  namespace: gloo-system
+spec:
+  kube:
+    selector:
+      app: echo
+      version: v2
+    serviceName: echo
+    serviceNamespace: default
+    servicePort: 8080

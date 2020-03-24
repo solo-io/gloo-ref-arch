@@ -32,8 +32,9 @@ Valet can be installed from source(https://github.com/solo-io/valet) or can be d
 * Multiple Proxies
   * [Internal-External](platform/multiple-proxies/internal-external)
 * [Namespaced Gloo](platform/namespaced)
-* [Progressive Delivery / Canary Rollout](platform/prog-delivery)
-
+* Canary Rollout
+  * [Two-Phased Approach with Open Source Gloo](platform/prog-delivery/two-phased-with-os-gloo)
+  
 ### Security Examples
 
 * [Access Logging](security/access-log)
@@ -66,3 +67,4 @@ Valet can be installed from source(https://github.com/solo-io/valet) or can be d
 ### Traffic Management
 
 * [GRPC](traffic-management/grpc)
+* [Response Transformations](traffic-management/transformations/response)

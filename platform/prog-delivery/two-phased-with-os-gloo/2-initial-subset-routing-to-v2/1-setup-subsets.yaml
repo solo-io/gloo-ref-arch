@@ -1,0 +1,14 @@
+steps:
+  - apply:
+      manifest:
+        path: upstream.yaml
+  - apply:
+      manifest:
+        path: vs-1.yaml
+  - curl:
+      service:
+        name: gateway-proxy
+        namespace: gloo-system
+      statusCode: 200
+      path: /
+      responseBody: "version:v1"

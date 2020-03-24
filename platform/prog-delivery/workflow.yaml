@@ -1,9 +1,0 @@
-# Pre-requisites:
-# - `valet ensure -f ../../common/workflows/deploy-gloo-enterprise.yaml`
-
-title: Progressive delivery with Gloo Upstream Groups
-steps:
-  - workflow:
-      path: ../../common/workflows/deploy-petclinic.yaml
-  - workflow:
-      path: 2-update-vets.yaml

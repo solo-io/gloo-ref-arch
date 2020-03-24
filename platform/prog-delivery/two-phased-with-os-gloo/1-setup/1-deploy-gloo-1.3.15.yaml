@@ -1,0 +1,9 @@
+steps:
+- helm3Deploy:
+    releaseName: gloo
+    namespace: gloo-system
+    releaseUri: "https://storage.googleapis.com/solo-public-helm/charts/gloo-1.3.15.tgz"
+    set:
+      "license_key": "env:LICENSE_KEY"
+    valuesFiles:
+      - values.yaml
