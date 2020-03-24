@@ -8,16 +8,67 @@ A common operational question to consider when building out your application pla
 version of a service? This is sometimes referred to as a canary rollout or progressive delivery. In this post, we'll look at 
 how Gloo can be used as an API gateway to facilitate canary rollouts of new user-facing services in Kubernetes. 
 
-## Application Versioning in Kubernetes
+## Initial setup
 
-[TODO: add picture of Kube cluster with echo namespace, gloo-system namespace]
+To start, we need a Kubernetes cluster. This scenario doesn't take advantage of any cloud specific 
+features, and can be run against a local test cluster such as [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/). 
+This post assumes a basic understanding of Kubernetes and how to interact with it using `kubectl`. 
 
-For this scenario, we're going to deploy an application to Kubernetes. The application will be a simple echo server that 
-responds to any incoming request with a text response, indicating the server version. In our staged canary rollout, 
-we'll be shifting traffic from v1 to v2 of the echo service. This rollout could occur over an extended period of time, 
-and the outcome is not guaranteed -- it may be aborted if certain metrics fall below certain thresholds. 
+To start, we'll install the latest [open source Gloo](https://github.com/solo-io/gloo) to the `gloo-system` namespace and deploy 
+ version `v1` of an example application to the `echo` namespace. We'll expose this application outside the cluster 
+ by creating a route in Gloo, to end up with a picture like this: 
 
-In order to run both versions of the server at the same time, we'll include the version in the Kubernetes Deployment object:
+![](1-setup/setup.png)
+
+### Deploying Gloo
+
+To start, we'll deploy open source Gloo. We can get the latest `glooctl` command line tool downloaded and added to the path
+by running:
+
+```bash
+curl -sL https://run.solo.io/gloo/install | sh
+export PATH=$HOME/.gloo/bin:$PATH
+```
+
+Now, you should be able to run `glooctl version` to see that it is installed correctly:
+
+```bash
+➜ glooctl version
+Client: {"version":"1.3.15"}
+Server: version undefined, could not find any version of gloo running
+```
+
+Now we can install the gateway to our cluster with a simple command:
+
+```bash
+glooctl install gateway
+```
+
+The console should indicate the install finishes successfully:
+
+```bash
+Creating namespace gloo-system... Done.
+Starting Gloo installation...
+
+Gloo was successfully installed!
+
+```
+
+### Deploying the application
+
+Our `echo` application is a simple container (thanks to our friends at HashiCorp) that will 
+respond with the application version, to help demonstrate our canary workflows as we start testing and 
+shifting traffic to a `v2` version of the application. 
+
+Kubernetes gives us a lot of flexibility in terms of modeling this application. We'll adopt the following 
+conventions:
+* We'll include the version in the deployment name so we can run two versions of the application 
+side-by-side and manage their lifecycle differently. 
+* We'll label pods with an app label (`app: echo`) and a version label (`version: v1`) to help with our canary rollout. 
+* We'll deploy a single Kubernetes `Service` for the application to set up networking. Instead of updating 
+this or using multiple services to manage routing to different versions, we'll manage the rollout with Gloo configuration. 
+
+The following is our `v1` echo application: 
 
 ```yaml
 apiVersion: apps/v1
@@ -48,14 +99,7 @@ spec:
             - containerPort: 8080
 ```
 
-Here, we've named the deployment `echo-v1` so that it can be run side-by-side with other versions of the echo server without
-a name conflict. We've included a label `app: echo` to know that this pod is part of the `echo` application, and we added a 
-label `version: v1` so we can later identify that this is a `v1` pod specifically. Later, we'll introduce a `v2` deployment,
- with an updated name and labels. 
-
-### Exposing inside the cluster with a Kubernetes Service
-
-We want to expose this server via DNS to other services inside the Kubernetes cluster, so we'll create a Service definition:
+And here is the `echo` Kubernetes `Service` object:
 
 ```yaml
 apiVersion: v1
@@ -70,6 +114,21 @@ spec:
   selector:
     app: echo
 ```
+
+For convenience, we've published this yaml in a repo so we can deploy it with the following command:
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/1-setup/echo.yaml
+```
+
+
+
+
+### Exposing inside the cluster with a Kubernetes Service
+
+We want to expose this server via DNS to other services inside the Kubernetes cluster, so we'll create a Service definition:
+
+
 
 This creates a DNS entry inside the cluster we can use to connect the API gateway to the echo containers. Note that we didn't include any reference 
 to the version in the service name or selector. Since the traffic to this service is actually coming from the API 
