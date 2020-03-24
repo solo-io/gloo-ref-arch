@@ -6,6 +6,7 @@ metadata:
 spec:
   virtualHost:
     domains:
+      # We'll allow any domain to avoid needing to set up DNS or provide a host header
       - '*'
     routes:
       - matchers:

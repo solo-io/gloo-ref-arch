@@ -8,5 +8,5 @@ spec:
     selector:
       app: echo
     serviceName: echo
-    serviceNamespace: default
+    serviceNamespace: echo
     servicePort: 8080

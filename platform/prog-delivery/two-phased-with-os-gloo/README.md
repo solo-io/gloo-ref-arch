@@ -118,25 +118,35 @@ spec:
 For convenience, we've published this yaml in a repo so we can deploy it with the following command:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/1-setup/echo.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/b993ea633288b09ec8d62b560ecd29621e29629e/platform/prog-delivery/two-phased-with-os-gloo/1-setup/echo.yaml
 ```
 
+We should see the following output:
+```bash
+namespace/echo created
+deployment.apps/echo-v1 created
+service/echo created
+```
 
+And we should be able to see all the resources healthy in the `echo` namespace:
+```bash
+➜ k get all -n echo
+NAME                           READY   STATUS    RESTARTS   AGE
+pod/echo-v1-66dbfffb79-287s5   1/1     Running   0          6s
 
+NAME           TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
+service/echo   ClusterIP   10.55.252.216   <none>        80/TCP    6s
 
-### Exposing inside the cluster with a Kubernetes Service
+NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/echo-v1   1/1     1            1           7s
 
-We want to expose this server via DNS to other services inside the Kubernetes cluster, so we'll create a Service definition:
-
-
-
-This creates a DNS entry inside the cluster we can use to connect the API gateway to the echo containers. Note that we didn't include any reference 
-to the version in the service name or selector. Since the traffic to this service is actually coming from the API 
-gateway, we'll keep this service definition stable and use Gloo to determine which version of the application to use as the traffic destination. 
+NAME                                 DESIRED   CURRENT   READY   AGE
+replicaset.apps/echo-v1-66dbfffb79   1         1         1       7s
+```
 
 ### Exposing outside the cluster with Gloo
 
-We can expose this service with a route in Gloo. First, we'll model the service as a Gloo `Upstream`, which is Gloo's abstraction 
+We can now expose this service outside the cluster with Gloo. First, we'll model the application as a Gloo `Upstream`, which is Gloo's abstraction 
 for a traffic destination. In this case the `Upstream` object just includes basic information about the Kubernetes service; later, we'll 
 add more configuration to support a canary rollout:
 
@@ -151,11 +161,11 @@ spec:
     selector:
       app: echo
     serviceName: echo
-    serviceNamespace: default
+    serviceNamespace: echo
     servicePort: 8080
 ```
 
-We can now create a route to this destination in **Gloo** by defining a virtual service:
+We can now create a route to this upstream in Gloo by defining a **virtual service**:
 
 ```yaml
 apiVersion: gateway.solo.io/v1
@@ -175,6 +185,13 @@ spec:
             upstream:
               name: echo
               namespace: gloo-system
+```
+
+We can apply these resources with the following commands:
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/b993ea633288b09ec8d62b560ecd29621e29629e/platform/prog-delivery/two-phased-with-os-gloo/1-setup/upstream.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/b993ea633288b09ec8d62b560ecd29621e29629e/platform/prog-delivery/two-phased-with-os-gloo/1-setup/vs.yaml
 ```
 
 Once we apply these two resources, we can start to send traffic to Gloo:
