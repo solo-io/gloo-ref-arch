@@ -118,7 +118,7 @@ spec:
 For convenience, we've published this yaml in a repo so we can deploy it with the following command:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/b993ea633288b09ec8d62b560ecd29621e29629e/platform/prog-delivery/two-phased-with-os-gloo/1-setup/echo.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/7c8e769bca02af636a783953b897fa79c6154b7c/platform/prog-delivery/two-phased-with-os-gloo/1-setup/echo.yaml
 ```
 
 We should see the following output:
@@ -190,11 +190,11 @@ spec:
 We can apply these resources with the following commands:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/b993ea633288b09ec8d62b560ecd29621e29629e/platform/prog-delivery/two-phased-with-os-gloo/1-setup/upstream.yaml
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/b993ea633288b09ec8d62b560ecd29621e29629e/platform/prog-delivery/two-phased-with-os-gloo/1-setup/vs.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/7c8e769bca02af636a783953b897fa79c6154b7c/platform/prog-delivery/two-phased-with-os-gloo/1-setup/upstream.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/7c8e769bca02af636a783953b897fa79c6154b7c/platform/prog-delivery/two-phased-with-os-gloo/1-setup/vs.yaml
 ```
 
-Once we apply these two resources, we can start to send traffic to Gloo:
+Once we apply these two resources, we can start to send traffic to the application through Gloo:
 
 ```bash
 ➜ curl $(glooctl proxy url)/
