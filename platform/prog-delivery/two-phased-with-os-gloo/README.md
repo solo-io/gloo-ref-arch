@@ -1,19 +1,20 @@
 # Two-phased canary rollout with Open Source Gloo
 
-Every day at Solo, we're talking to platform owners, architects, and engineers who are using [Gloo]() as an API gateway
+Every day at Solo, we're talking to platform owners, architects, and engineers who are using [Gloo](https://www.solo.io/products/gloo/) as an API gateway
 to expose their applications to end users. These applications may span legacy monoliths, microservices, managed cloud services, and Kubernetes 
-clusters. Fortunately, Gloo makes it easy to set up routes to manage, secure, and observe application traffic while 
-supporting a flexible deployment architecture to meet our customers' varying production needs.
+clusters. Fortunately, **Gloo makes it easy to set up routes to manage, secure, and observe application traffic while 
+supporting a flexible deployment architecture** to meet our customers' varying production needs.
 
-Beyond the initial set up, platform owners frequently ask us to help design the operational workflows within their organization: 
+Beyond the initial set up, platform owners frequently ask us to help design the **operational workflows** within their organization: 
 How do we bring a new application online? How do we upgrade an application? How do we divide responsibilities across our 
 platform, ops, and development teams? 
 
-In this post, we're going to dive deep into how Gloo can support your operational workflows for canary testing and rolling out 
-a new version of an application. We're going to introduce a **two-phased** approach to application upgrades. In the first phase, 
-we will route a **small subset of traffic** to the new version to perform **smoke and correctness tests**. In the second phase, we'll 
-**progressively shift** the load to the new version, allowing us to roll back were the **application performance** or quality to suffer
-**at scale**.  
+In this post, we're going to use Gloo to design a **two-phased canary rollout** workflow for application upgrades:
+* In the first phase, we'll do canary testing by shifting a small subset of traffic to the new version. This allows you to safely perform smoke and correctness tests. 
+* In the second phase, we'll progressively shift traffic to the new version, allowing us to monitor the new version under load, and eventually, decommission the old version. 
+
+To keep it simple, we're going to focus on designing the workflow using [open source Gloo](https://github.com/solo-io/gloo), and we're going to deploy the gateway and 
+application to Kubernetes. At the end, we'll talk about a few extensions and advanced topics that could be interesting to explore in a follow up.  
 
 ## Initial setup
 
