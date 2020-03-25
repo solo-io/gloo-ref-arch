@@ -1,13 +1,19 @@
 # Two-phased canary rollout with Open Source Gloo
 
-As engineering organizations move towards microservices, containers, and Kubernetes, they are leveraging API gateways and
-service mesh technology to help with those migrations, and to unlock new capabilities for managing, observing, and securing 
-traffic to their application. 
+Every day at Solo, we're talking to platform owners, architects, and engineers who are using [Gloo]() as an API gateway
+to expose their applications to end users. These applications may span legacy monoliths, microservices, managed cloud services, and Kubernetes 
+clusters. Fortunately, Gloo makes it easy to set up routes to manage, secure, and observe application traffic while 
+supporting a flexible deployment architecture to meet our customers' varying production needs.
 
-A common operational question to consider when building out your application platform is: how to migrate user traffic to a new
-version of a service? This is sometimes referred to as a canary rollout or progressive delivery. In this post, we'll look at 
-how Gloo can be used as an API gateway to facilitate canary rollouts of new user-facing services in Kubernetes, while supporting
-correctness and performance-based acceptance tests on the new version. 
+Beyond the initial set up, platform owners frequently ask us to help design the operational workflows within their organization: 
+How do we bring a new application online? How do we upgrade an application? How do we divide responsibilities across our 
+platform, ops, and development teams? 
+
+In this post, we're going to dive deep into how Gloo can support your operational workflows for canary testing and rolling out 
+a new version of an application. We're going to introduce a **two-phased** approach to application upgrades. In the first phase, 
+we will route a **small subset of traffic** to the new version to perform **smoke and correctness tests**. In the second phase, we'll 
+**progressively shift** the load to the new version, allowing us to roll back were the **application performance** or quality to suffer
+**at scale**.  
 
 ## Initial setup
 
