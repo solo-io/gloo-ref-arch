@@ -564,9 +564,11 @@ version:v1
 In practice, during this process it's likely you'll be monitoring some performance and business metrics 
 to ensure the traffic shift isn't resulting in a decline in the overall quality of service. We can even 
 leverage operators like [Flagger](https://github.com/weaveworks/flagger) to help automate this Gloo 
-workflow. We will save these topics for a future post on advanced canary testing use cases with Gloo. 
+workflow. Gloo Enterprise integrates with your metrics backend and provides out of the box and dynamic, 
+upstream-based dashboards that can be used to monitor the health of the rollout. 
+We will save these topics for a future post on advanced canary testing use cases with Gloo. 
 
-### Finish Rollout
+### Finishing the rollout
 
 We will continue adjusting weights until eventually, all of the traffic is now being routed to `v2`:
 
@@ -618,7 +620,7 @@ version:v2
 version:v2
 ```
 
-### Decommission old upstream
+### Decommissioning the old upstream
    
 At this point, we have deployed the new version of our application, conducted correctness tests using subset routing, 
 conducted load and performance tests by progressively shifting traffic to the new version, and finished 
@@ -648,3 +650,70 @@ spec:
     serviceNamespace: echo
     servicePort: 8080
 ```
+
+We can apply this to the cluster with the following command: 
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/d61dbf5cf62d605149e82e32192ce17788f109ec/platform/prog-delivery/two-phased-with-os-gloo/4-decommissioning-v1/upstream.yaml
+```
+
+Third, we can update our virtual service to only route to the `echo` upstream, as we had in the beginning:
+
+```yaml
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  name: echo
+  namespace: gloo-system
+spec:
+  virtualHost:
+    domains:
+      - '*'
+    routes:
+      - matchers:
+          - prefix: /
+        routeAction:
+          single:
+            upstream:
+              name: echo
+              namespace: gloo-system
+```
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/d61dbf5cf62d605149e82e32192ce17788f109ec/platform/prog-delivery/two-phased-with-os-gloo/4-decommissioning-v1/vs.yaml
+```
+
+Finally, we'll delete the `echo-canary` upstream. We can add a new canary upstream in the future when we need it. 
+
+```bash
+kubectl delete upstream -n gloo-system echo-canary
+``` 
+
+Now our cluster looks like this:
+
+![](4-decommissioning-v1/end-state.png)
+
+And requests to the gateway return this:
+
+```bash
+➜ curl $(glooctl proxy url)/
+version:v2
+```
+
+We have now completed our two-phased canary rollout of an application update using Gloo!
+
+## Other Advanced Topics
+
+Over the course of this post, we collected a few topics that could be a good starting point for advanced exploration:
+
+* Using the **JWT** filter to verify JWTs, extract claims onto headers, and route to canary versions depending on a claim value. 
+* Looking at **Prometheus metrics** and **Grafana dashboards** created by Gloo to monitor the health of the rollout. 
+* Automating the rollout by integrating **Flagger** with **Gloo**
+
+A few other topics that warrant further exploration:
+
+* Supporting **self-service** upgrades by giving teams ownership over their upstream and route configuration
+* Utilizing Gloo's **delegation** feature and Kubernetes **RBAC** to decentralize the configuration management safely
+* Fully automating the continuous delivery process by applying **GitOps** principles and using tools like **Flux** to push config to the cluster
+* Supporting **hybrid** or **non-Kubernetes** application use-cases by setting up Gloo with a different deployment pattern
+
