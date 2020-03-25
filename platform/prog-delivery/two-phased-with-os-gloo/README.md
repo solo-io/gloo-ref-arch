@@ -119,7 +119,7 @@ spec:
 For convenience, we've published this yaml in a repo so we can deploy it with the following command:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/7c8e769bca02af636a783953b897fa79c6154b7c/platform/prog-delivery/two-phased-with-os-gloo/1-setup/echo.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/54231a9e1fe2150319e05e2ccbd2ccaa50927789/platform/prog-delivery/two-phased-with-os-gloo/1-setup/echo.yaml
 ```
 
 We should see the following output:
@@ -191,8 +191,8 @@ spec:
 We can apply these resources with the following commands:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/7c8e769bca02af636a783953b897fa79c6154b7c/platform/prog-delivery/two-phased-with-os-gloo/1-setup/upstream.yaml
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/7c8e769bca02af636a783953b897fa79c6154b7c/platform/prog-delivery/two-phased-with-os-gloo/1-setup/vs.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/54231a9e1fe2150319e05e2ccbd2ccaa50927789/platform/prog-delivery/two-phased-with-os-gloo/1-setup/upstream.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/54231a9e1fe2150319e05e2ccbd2ccaa50927789/platform/prog-delivery/two-phased-with-os-gloo/1-setup/vs.yaml
 ```
 
 Once we apply these two resources, we can start to send traffic to the application through Gloo:
@@ -288,16 +288,15 @@ spec:
 We can apply them to the cluster with the following commands:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/7c8e769bca02af636a783953b897fa79c6154b7c/platform/prog-delivery/two-phased-with-os-gloo/2-initial-subset-routing-to-v2/upstream.yaml
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/7c8e769bca02af636a783953b897fa79c6154b7c/platform/prog-delivery/two-phased-with-os-gloo/2-initial-subset-routing-to-v2/vs-1.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/54231a9e1fe2150319e05e2ccbd2ccaa50927789/platform/prog-delivery/two-phased-with-os-gloo/2-initial-subset-routing-to-v2/upstream.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/54231a9e1fe2150319e05e2ccbd2ccaa50927789/platform/prog-delivery/two-phased-with-os-gloo/2-initial-subset-routing-to-v2/vs-1.yaml
 ```
 
 The application should continue to function as before:
 
-TODO!!!!
 ```bash
 ➜ curl $(glooctl proxy url)/
-no healthy upstream%
+version:v1
 ```
 
 ### Deploying echo v2
@@ -332,12 +331,19 @@ spec:
             - containerPort: 8080
 ```
 
+We can deploy with the following command:
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/54231a9e1fe2150319e05e2ccbd2ccaa50927789/platform/prog-delivery/two-phased-with-os-gloo/2-initial-subset-routing-to-v2/echo-v2.yaml
+```
+
 Since our gateway is configured to route specifically to the `v1` subset, this should have no effect. However, it does enable 
 `v2` to be routable from the gateway if the `v2` subset is configured for a route. 
 
-### Adding a route to v2
+### Adding a route to v2 for canary testing
 
-To start, we'll route to v2 when the `stage: canary` header is supplied on the request. 
+We'll route to the `v2` subset when the `stage: canary` header is supplied on the request. If the header isn't 
+provided, we'll continue to route to the `v1` subset as before.  
 
 ```yaml
 apiVersion: gateway.solo.io/v1
@@ -375,6 +381,12 @@ spec:
                 version: v1
 ```
 
+We can deploy with the following command:
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/54231a9e1fe2150319e05e2ccbd2ccaa50927789/platform/prog-delivery/two-phased-with-os-gloo/2-initial-subset-routing-to-v2/vs-2.yaml
+```
+
 ### Canary testing
 
 Now that we have this route, we can do some testing. First let's ensure that the existing route is working as expected:
@@ -384,26 +396,31 @@ Now that we have this route, we can do some testing. First let's ensure that the
 version:v1
 ```
 
+And now we can start to canary test our new application version:
+
 ```bash
 ➜ curl $(glooctl proxy url)/ -H "stage: canary"
 version:v2
 ```
 
-### Advanced subsets using JWT claims for routing
+### Advanced use cases for subset routing
 
-Let's say this approach, with a request header, is too open for our initial testing. One option is to add JWT authorization
-to the virtual service, and then use the "claims to headers" feature of Gloo to add the stage header based on a claim 
-value in the verified JWT. 
+We may decide that this approach, using user-provided request headers, is too open. Instead, we may 
+want to restrict canary testing to a known, authorized user. 
 
-
+A common implementation of this that we've seen is for the canary route to require a valid JWT that contains
+a specific claim to indicate the subject is authorized for canary testing. Enterprise Gloo has out of the box 
+support for verifying JWTs, updating the request headers based on the JWT claims, and recomputing the 
+routing destination based on the updated headers. We'll save that for a future post covering more advanced use 
+cases in canary testing. 
 
 ## Phase 2: Shifting all traffic to v2 and decommissioning v1
 
+At this point, we've deployed `v2`, and created a route for canary testing. If we are satisfied with the 
+results of the testing, we can move on to phase 2 and start shifting the load from `v1` to `v2`. We'll use 
+**weighted destinations** in Gloo to manage the load during the migration. 
 
-
-In this option, we want to start shifting a small fraction of the traffic for the echo application to v2, and send the 
-rest of the traffic to v1. Over time, we'll increase the weight for v2 until all of the traffic is being routed to that version, while 
-monitoring to ensure certain metrics remain above certain thresholds. When this is done, we can decommission v1. 
+### Setting up the weighted destinations
 
 In order to enable weighted destinations, we need to model each version as a separate upstream destination. First, we'll update 
 the existing upstream to add a version to the selector. 
@@ -472,6 +489,19 @@ spec:
                     namespace: gloo-system
 ```
 
+We can apply these resources to the cluster with the following commands:
+```bash
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/54231a9e1fe2150319e05e2ccbd2ccaa50927789/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/upstream.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/54231a9e1fe2150319e05e2ccbd2ccaa50927789/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/upstream-canary.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/54231a9e1fe2150319e05e2ccbd2ccaa50927789/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/vs-2.yaml
+```
+
+Now the cluster looks like this:
+
+![](3-progressive-traffic-shift-to-v2/init-traffic-shift.png)
+
+With the initial weights, we should see the gateway continue to serve `v1` for all traffic.
+
 ```bash
 ➜ curl $(glooctl proxy url)/
 version:v1
@@ -479,7 +509,11 @@ version:v1
 
 ### Commence rollout
 
-Now we can change the weights:
+To simulate a load test, let's shift half the traffic to `v2`:
+
+![](3-progressive-traffic-shift-to-v2/load-test.png)
+
+This can be expressed on our virtual service by adjusting the weights:
 
 ```yaml
 apiVersion: gateway.solo.io/v1
@@ -507,6 +541,24 @@ spec:
                   upstream:
                     name: echo-canary
                     namespace: gloo-system
+```
+
+We can apply this to the cluster with the following command:
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/54231a9e1fe2150319e05e2ccbd2ccaa50927789/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/vs-3.yaml
+```
+
+Now when we send traffic to the gateway, we should see half of the requests return `version:v1` and the 
+other half return `version:v2`. 
+
+```bash
+➜ curl $(glooctl proxy url)/
+version:v1
+➜ curl $(glooctl proxy url)/
+version:v2
+➜ curl $(glooctl proxy url)/
+version:v1
 ```
 
 ### Decommission old upstream

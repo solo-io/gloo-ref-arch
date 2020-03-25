@@ -9,5 +9,5 @@ spec:
       app: echo
       version: v1
     serviceName: echo
-    serviceNamespace: default
+    serviceNamespace: echo
     servicePort: 8080
