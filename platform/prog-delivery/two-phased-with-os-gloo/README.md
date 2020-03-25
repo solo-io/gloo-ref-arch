@@ -252,7 +252,7 @@ spec:
     selector:
       app: echo
     serviceName: echo
-    serviceNamespace: default
+    serviceNamespace: echo
     servicePort: 8080
     subsetSpec:
       selectors:
@@ -437,7 +437,7 @@ spec:
       app: echo
       version: v1
     serviceName: echo
-    serviceNamespace: default
+    serviceNamespace: echo
     servicePort: 8080
 ```
 
@@ -455,7 +455,7 @@ spec:
       app: echo
       version: v2
     serviceName: echo
-    serviceNamespace: default
+    serviceNamespace: echo
     servicePort: 8080
 ```
 
@@ -716,4 +716,4 @@ A few other topics that warrant further exploration:
 * Utilizing Gloo's **delegation** feature and Kubernetes **RBAC** to decentralize the configuration management safely
 * Fully automating the continuous delivery process by applying **GitOps** principles and using tools like **Flux** to push config to the cluster
 * Supporting **hybrid** or **non-Kubernetes** application use-cases by setting up Gloo with a different deployment pattern
-
+* Adding a phase of testing where **traffic shadowing** is used to send traffic to the new version 
