@@ -209,6 +209,10 @@ Once we apply these two resources, we can start to send traffic to the applicati
 version:v1
 ```
 
+Our setup is complete, and our cluster now looks like this:
+
+![](1-setup/setup.png)
+
 ## Two-Phased Rollout Strategy
 
 Now we have a new version `v2` of the echo application that we wish to roll out. We know that when the  
