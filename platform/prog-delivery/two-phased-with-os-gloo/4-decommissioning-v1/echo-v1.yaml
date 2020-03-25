@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: echo-v1
+  namespace: echo
 spec:
   replicas: 1
   selector:
