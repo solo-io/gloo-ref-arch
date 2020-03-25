@@ -226,7 +226,7 @@ canary rollout with Gloo, that could be used to satisfy the vast majority of acc
 
 In the first phase, we'll perform smoke and correctness tests by routing a small segment of the traffic to the new version 
 of the application. In this demo, we'll use a header `stage: canary` to trigger routing to the new service, though in 
-practice it may be desirable to make this decision based on another part of the request, such as the claim in a verified JWT. 
+practice it may be desirable to make this decision based on another part of the request, such as a claim in a verified JWT. 
 
 In the second phase, we've already established correctness, so we are ready to shift all of the traffic over to the new 
 version of the application. We'll configure weighted destinations, and shift the traffic while monitoring certain business 
