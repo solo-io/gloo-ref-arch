@@ -6,11 +6,12 @@ traffic to their application.
 
 A common operational question to consider when building out your application platform is: how to migrate user traffic to a new
 version of a service? This is sometimes referred to as a canary rollout or progressive delivery. In this post, we'll look at 
-how Gloo can be used as an API gateway to facilitate canary rollouts of new user-facing services in Kubernetes. 
+how Gloo can be used as an API gateway to facilitate canary rollouts of new user-facing services in Kubernetes, while supporting
+correctness and performance-based acceptance tests on the new version. 
 
 ## Initial setup
 
-To start, we need a Kubernetes cluster. This scenario doesn't take advantage of any cloud specific 
+To start, we need a Kubernetes cluster. This example doesn't take advantage of any cloud specific 
 features, and can be run against a local test cluster such as [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/). 
 This post assumes a basic understanding of Kubernetes and how to interact with it using `kubectl`. 
 
@@ -201,7 +202,7 @@ Once we apply these two resources, we can start to send traffic to the applicati
 version:v1
 ```
 
-## Rollout Strategy
+## Two-Phased Rollout Strategy
 
 Now we have a new version `v2` of the echo application that we wish to roll out. We know that when the  
 rollout is complete, we are going to end up with this picture:
@@ -226,11 +227,19 @@ skipped.
 
 ## Phase 1: Initial canary rollout of v2
 
-[TODO: picture of v1 and v2 with subset routing]
+In this phase, we'll deploy `v2`, and then use a header `stage: canary` to start routing a small amount of specific 
+traffic to the new version. We'll use this header to perform some basic smoke testing and make sure `v2` is working the 
+way we'd expect:
+
+![](2-initial-subset-routing-to-v2/subset-routing.png)
 
 ### Setting up subset routing
 
-First, we'll update the upstream to include a subset definition:
+To do this, we're going to take advantage of a Gloo feature called [subset routing](LINK). We'll use the version label 
+to define subsets of the `echo` application called `v1` and `v2`. Then we'll update our routes to specify the subset on 
+the route destination, when the desired matching criteria are met. 
+
+First, we need to update the upstream to include a subset definition:
 
 ```yaml
 apiVersion: gloo.solo.io/v1
@@ -251,8 +260,7 @@ spec:
             - version
 ```
 
-Now we can create routes that route to specific versions of the echo server. First, we'll update our virtual service 
-to specify the `v1` subset to be used for our existing route:
+Then, we'll update our route to this upstream to specify the `v1` subset, like so:
 
 ```yaml
 apiVersion: gateway.solo.io/v1
@@ -277,9 +285,24 @@ spec:
                 version: v1
 ```
 
-### Deploying echo server v2
+We can apply them to the cluster with the following commands:
 
-Now we can safely deploy `v2` of the echo server:
+```bash
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/7c8e769bca02af636a783953b897fa79c6154b7c/platform/prog-delivery/two-phased-with-os-gloo/2-initial-subset-routing-to-v2/upstream.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/7c8e769bca02af636a783953b897fa79c6154b7c/platform/prog-delivery/two-phased-with-os-gloo/2-initial-subset-routing-to-v2/vs-1.yaml
+```
+
+The application should continue to function as before:
+
+TODO!!!!
+```bash
+➜ curl $(glooctl proxy url)/
+no healthy upstream%
+```
+
+### Deploying echo v2
+
+Now we can safely deploy `v2` of the echo application:
 
 ```yaml
 apiVersion: apps/v1

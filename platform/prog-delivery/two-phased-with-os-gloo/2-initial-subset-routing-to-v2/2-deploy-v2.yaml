@@ -2,6 +2,8 @@ steps:
   - apply:
       manifest:
         path: echo-v2.yaml
+    values:
+      Namespace: echo
   - apply:
       manifest:
         path: vs-2.yaml
