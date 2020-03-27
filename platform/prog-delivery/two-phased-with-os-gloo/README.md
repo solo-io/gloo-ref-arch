@@ -62,6 +62,17 @@ Gloo was successfully installed!
 
 ```
 
+Before long, we can see all the Gloo pods running in the `gloo-system` namespace:
+
+```bash
+➜ k get pod -n gloo-system
+NAME                             READY   STATUS    RESTARTS   AGE
+discovery-58f8856bd7-4fftg       1/1     Running   0          13s
+gateway-66f86bc8b4-n5crc         1/1     Running   0          13s
+gateway-proxy-5ff99b8679-tbp65   1/1     Running   0          13s
+gloo-66b8dc8868-z5c6r            1/1     Running   0          13s
+```
+
 ### Deploying the application
 
 Our `echo` application is a simple container (thanks to our friends at HashiCorp) that will 
@@ -253,7 +264,7 @@ way we'd expect:
 ### Setting up subset routing
 
 Before deploying our `v2` service, we'll update our virtual service to only route to pods that have the subset label 
-`version: v1`, using a Gloo feature called [subset routing](LINK). 
+`version: v1`, using a Gloo feature called [subset routing](https://docs.solo.io/gloo/latest/guides/traffic_management/destination_types/subsets/). 
 
 ```yaml
 apiVersion: gateway.solo.io/v1
