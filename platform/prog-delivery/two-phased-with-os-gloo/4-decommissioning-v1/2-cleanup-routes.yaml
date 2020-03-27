@@ -2,9 +2,6 @@ steps:
   - apply:
       manifest:
         path: vs.yaml
-  - delete:
-      manifest:
-        path: upstream-canary.yaml
   - curl:
       service:
         name: gateway-proxy

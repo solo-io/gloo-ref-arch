@@ -1,9 +1,6 @@
 steps:
   - apply:
       manifest:
-        path: upstream.yaml
-  - apply:
-      manifest:
         path: vs-1.yaml
   - curl:
       service:

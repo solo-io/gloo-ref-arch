@@ -9,17 +9,36 @@ spec:
       - '*'
     routes:
       - matchers:
+          - headers:
+              - name: stage
+                value: canary
+            prefix: /
+        routeAction:
+          single:
+            upstream:
+              name: echo
+              namespace: gloo-system
+            subset:
+              values:
+                version: v2
+      - matchers:
           - prefix: /
         routeAction:
           multi:
             destinations:
-              - weight: 10
-                destination:
+              - destination:
                   upstream:
                     name: echo
                     namespace: gloo-system
-              - weight: 0
-                destination:
+                  subset:
+                    values:
+                      version: v1
+                weight: 50
+              - destination:
                   upstream:
-                    name: echo-canary
+                    name: echo
                     namespace: gloo-system
+                  subset:
+                    values:
+                      version: v2
+                weight: 50

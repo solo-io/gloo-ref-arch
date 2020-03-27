@@ -2,9 +2,6 @@ steps:
   - delete:
       manifest:
         path: echo-v1.yaml
-  - apply:
-      manifest:
-        path: upstream.yaml
   - curl:
       service:
         name: gateway-proxy

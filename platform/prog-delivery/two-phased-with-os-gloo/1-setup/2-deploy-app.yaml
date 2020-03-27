@@ -2,8 +2,8 @@ steps:
   - apply:
       manifest:
         path: echo.yaml
-    values:
-      Namespace: echo
+      values:
+        Namespace: echo
   - apply:
       manifest:
         path: upstream.yaml

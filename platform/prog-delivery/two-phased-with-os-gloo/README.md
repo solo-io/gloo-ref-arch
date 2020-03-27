@@ -22,7 +22,7 @@ To start, we need a Kubernetes cluster. This example doesn't take advantage of a
 features, and can be run against a local test cluster such as [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/). 
 This post assumes a basic understanding of Kubernetes and how to interact with it using `kubectl`. 
 
-To start, we'll install the latest [open source Gloo](https://github.com/solo-io/gloo) to the `gloo-system` namespace and deploy 
+We'll install the latest [open source Gloo](https://github.com/solo-io/gloo) to the `gloo-system` namespace and deploy 
  version `v1` of an example application to the `echo` namespace. We'll expose this application outside the cluster 
  by creating a route in Gloo, to end up with a picture like this: 
 
@@ -30,8 +30,8 @@ To start, we'll install the latest [open source Gloo](https://github.com/solo-io
 
 ### Deploying Gloo
 
-To start, we'll deploy open source Gloo. We can get the latest `glooctl` command line tool downloaded and added to the path
-by running:
+We'll install gloo with the `glooctl` command line tool, which we can download and add to the `PATH` with the following 
+commands:
 
 ```bash
 curl -sL https://run.solo.io/gloo/install | sh
@@ -155,8 +155,7 @@ replicaset.apps/echo-v1-66dbfffb79   1         1         1       7s
 ### Exposing outside the cluster with Gloo
 
 We can now expose this service outside the cluster with Gloo. First, we'll model the application as a Gloo `Upstream`, which is Gloo's abstraction 
-for a traffic destination. In this case the `Upstream` object just includes basic information about the Kubernetes service; later, we'll 
-add more configuration to support a canary rollout:
+for a traffic destination:
 
 ```yaml
 apiVersion: gloo.solo.io/v1
@@ -171,7 +170,14 @@ spec:
     serviceName: echo
     serviceNamespace: echo
     servicePort: 8080
+    subsetSpec:
+      selectors:
+        - keys:
+            - version
 ```
+
+Here, we're setting up subsets based on the `version` label. We don't have to use this in our routes, but later
+we'll start to use it to support our canary workflow. 
 
 We can now create a route to this upstream in Gloo by defining a **virtual service**:
 
@@ -246,32 +252,8 @@ way we'd expect:
 
 ### Setting up subset routing
 
-To do this, we're going to take advantage of a Gloo feature called [subset routing](LINK). We'll use the version label 
-to define subsets of the `echo` application called `v1` and `v2`. Then we'll update our routes to specify the subset on 
-the route destination, when the desired matching criteria are met. 
-
-First, we need to update the upstream to include a subset definition:
-
-```yaml
-apiVersion: gloo.solo.io/v1
-kind: Upstream
-metadata:
-  name: echo
-  namespace: gloo-system
-spec:
-  kube:
-    selector:
-      app: echo
-    serviceName: echo
-    serviceNamespace: echo
-    servicePort: 8080
-    subsetSpec:
-      selectors:
-        - keys:
-            - version
-```
-
-Then, we'll update our route to this upstream to specify the `v1` subset, like so:
+Before deploying our `v2` service, we'll update our virtual service to only route to pods that have the subset label 
+`version: v1`, using a Gloo feature called [subset routing](LINK). 
 
 ```yaml
 apiVersion: gateway.solo.io/v1
@@ -299,7 +281,6 @@ spec:
 We can apply them to the cluster with the following commands:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/6175c8f05ceabec3e5028616767c412d49d857d9/platform/prog-delivery/two-phased-with-os-gloo/2-initial-subset-routing-to-v2/upstream.yaml
 kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/6175c8f05ceabec3e5028616767c412d49d857d9/platform/prog-delivery/two-phased-with-os-gloo/2-initial-subset-routing-to-v2/vs-1.yaml
 ```
 
@@ -429,48 +410,13 @@ cases in canary testing.
 
 At this point, we've deployed `v2`, and created a route for canary testing. If we are satisfied with the 
 results of the testing, we can move on to phase 2 and start shifting the load from `v1` to `v2`. We'll use 
-**weighted destinations** in Gloo to manage the load during the migration. 
+[weighted destinations](LINK) in Gloo to manage the load during the migration. 
 
 ### Setting up the weighted destinations
 
-In order to enable weighted destinations, we need to model each version as a separate upstream destination. First, we'll update 
-the existing upstream to add a version to the selector. 
-
-```yaml
-apiVersion: gloo.solo.io/v1
-kind: Upstream
-metadata:
-  name: echo
-  namespace: gloo-system
-spec:
-  kube:
-    selector:
-      app: echo
-      version: v1
-    serviceName: echo
-    serviceNamespace: echo
-    servicePort: 8080
-```
-
-Next, we'll add a new upstream to represent the canary destination:
-
-```yaml
-apiVersion: gloo.solo.io/v1
-kind: Upstream
-metadata:
-  name: echo-canary
-  namespace: gloo-system
-spec:
-  kube:
-    selector:
-      app: echo
-      version: v2
-    serviceName: echo
-    serviceNamespace: echo
-    servicePort: 8080
-```
-
-Now we can change the Gloo route to route to both of these destinations, starting with sending all the traffic to the v1. 
+We can change the Gloo route to route to both of these destinations, with weights to decide how much of the traffic should 
+go to the `v1` versus the `v2` subset. To start, we're going to set it up so 100% of the traffic continues to get routed to the
+`v1` subset, unless the `stage: canary` header was provided as before. 
 
 ```yaml
 apiVersion: gateway.solo.io/v1
@@ -483,31 +429,51 @@ spec:
     domains:
       - '*'
     routes:
+      # We'll keep our route from before if we want to continue testing with this header
+      - matchers:
+          - headers:
+              - name: stage
+                value: canary
+            prefix: /
+        routeAction:
+          single:
+            upstream:
+              name: echo
+              namespace: gloo-system
+            subset:
+              values:
+                version: v2
+      # Now we'll route the rest of the traffic to the upstream, load balanced across the two subsets. 
       - matchers:
           - prefix: /
         routeAction:
           multi:
             destinations:
-              - weight: 10
-                destination:
+              - destination:
                   upstream:
                     name: echo
                     namespace: gloo-system
-              - weight: 0
-                destination:
+                  subset:
+                    values:
+                      version: v1
+                weight: 100
+              - destination:
                   upstream:
-                    name: echo-canary
+                    name: echo
                     namespace: gloo-system
+                  subset:
+                    values:
+                      version: v2
+                weight: 0
+
 ```
 
-We can apply these resources to the cluster with the following commands:
+We can apply this virtual service update to the cluster with the following commands:
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/6175c8f05ceabec3e5028616767c412d49d857d9/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/upstream.yaml
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/6175c8f05ceabec3e5028616767c412d49d857d9/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/upstream-canary.yaml
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/6175c8f05ceabec3e5028616767c412d49d857d9/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/vs-2.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/6175c8f05ceabec3e5028616767c412d49d857d9/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/vs-1.yaml
 ```
 
-Now the cluster looks like this:
+Now the cluster looks like this, for any request that doesn't have the `stage: canary` header:
 
 ![](3-progressive-traffic-shift-to-v2/init-traffic-shift.png)
 
@@ -538,26 +504,47 @@ spec:
       - '*'
     routes:
       - matchers:
+          - headers:
+              - name: stage
+                value: canary
+            prefix: /
+        routeAction:
+          single:
+            upstream:
+              name: echo
+              namespace: gloo-system
+            subset:
+              values:
+                version: v2
+      - matchers:
           - prefix: /
         routeAction:
           multi:
             destinations:
-              - weight: 5
-                destination:
+              - destination:
                   upstream:
                     name: echo
                     namespace: gloo-system
-              - weight: 5
-                destination:
+                  subset:
+                    values:
+                      version: v1
+                # Update the weight so 50% of the traffic hits v1
+                weight: 50
+              - destination:
                   upstream:
-                    name: echo-canary
+                    name: echo
                     namespace: gloo-system
+                  subset:
+                    values:
+                      version: v2
+                # And 50% is routed to v2
+                weight: 50
 ```
 
 We can apply this to the cluster with the following command:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/54231a9e1fe2150319e05e2ccbd2ccaa50927789/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/vs-3.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/54231a9e1fe2150319e05e2ccbd2ccaa50927789/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/vs-2.yaml
 ```
 
 Now when we send traffic to the gateway, we should see half of the requests return `version:v1` and the 
@@ -599,25 +586,46 @@ spec:
       - '*'
     routes:
       - matchers:
+          - headers:
+              - name: stage
+                value: canary
+            prefix: /
+        routeAction:
+          single:
+            upstream:
+              name: echo
+              namespace: gloo-system
+            subset:
+              values:
+                version: v2
+      - matchers:
           - prefix: /
         routeAction:
           multi:
             destinations:
-              - weight: 0
-                destination:
+              - destination:
                   upstream:
                     name: echo
                     namespace: gloo-system
-              - weight: 10
-                destination:
+                  subset:
+                    values:
+                      version: v1
+                # No traffic will be sent to v1 anymore
+                weight: 0
+              - destination:
                   upstream:
-                    name: echo-canary
+                    name: echo
                     namespace: gloo-system
+                  subset:
+                    values:
+                      version: v2
+                # Now all the traffic will be routed to v2
+                weight: 100
 ```
 
 We can apply that to the cluster with the following command: 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/54231a9e1fe2150319e05e2ccbd2ccaa50927789/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/vs-4.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/54231a9e1fe2150319e05e2ccbd2ccaa50927789/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/vs-3.yaml
 ```
 
 Now when we send traffic to the gateway, we should see all of the requests return `version:v2`. 
@@ -637,38 +645,7 @@ At this point, we have deployed the new version of our application, conducted co
 conducted load and performance tests by progressively shifting traffic to the new version, and finished 
 the rollout. The only remaining task is to clean up our `v1` resources. 
 
-First, we'll delete the `v1` deployment, which is no longer serving any traffic. 
-            
-```bash
-kubectl delete deploy -n echo echo-v1
-```
-
-Second, we'll return the `echo` upstream to the original state we started. Since there is only one version
-of the application of the deployment on the cluster, we don't need the `version` in the selector anymore. 
-We can re-introduce a version in the selctor, or a subset spec, when it's time to roll out a new version `v3`. 
-
-```yaml
-apiVersion: gloo.solo.io/v1
-kind: Upstream
-metadata:
-  name: echo
-  namespace: gloo-system
-spec:
-  kube:
-    selector:
-      app: echo
-    serviceName: echo
-    serviceNamespace: echo
-    servicePort: 8080
-```
-
-We can apply this to the cluster with the following command: 
-
-```bash
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/d61dbf5cf62d605149e82e32192ce17788f109ec/platform/prog-delivery/two-phased-with-os-gloo/4-decommissioning-v1/upstream.yaml
-```
-
-Third, we can update our virtual service to only route to the `echo` upstream, as we had in the beginning:
+First, we'll clean up our routes. We'll leave the subset specified on the route so we are all setup for future upgrades. 
 
 ```yaml
 apiVersion: gateway.solo.io/v1
@@ -688,17 +665,22 @@ spec:
             upstream:
               name: echo
               namespace: gloo-system
+            subset:
+              values:
+                version: v2
 ```
+
+We can apply this update with the following command: 
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/d61dbf5cf62d605149e82e32192ce17788f109ec/platform/prog-delivery/two-phased-with-os-gloo/4-decommissioning-v1/vs.yaml
 ```
 
-Finally, we'll delete the `echo-canary` upstream. We can add a new canary upstream in the future when we need it. 
-
+And we can delete the `v1` deployment, which is no longer serving any traffic. 
+            
 ```bash
-kubectl delete upstream -n gloo-system echo-canary
-``` 
+kubectl delete deploy -n echo echo-v1
+```
 
 Now our cluster looks like this:
 

@@ -1,7 +1,7 @@
 steps:
   - apply:
       manifest:
-        path: vs-4.yaml
+        path: vs-3.yaml
   - curl:
       service:
         name: gateway-proxy

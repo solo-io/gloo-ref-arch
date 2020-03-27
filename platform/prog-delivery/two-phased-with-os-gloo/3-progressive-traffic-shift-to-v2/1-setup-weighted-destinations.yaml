@@ -1,7 +1,7 @@
 steps:
   - apply:
       manifest:
-        path: vs-3.yaml
+        path: vs-1.yaml
   - curl:
       service:
         name: gateway-proxy
@@ -14,5 +14,7 @@ steps:
         name: gateway-proxy
         namespace: gloo-system
       path: /
+      headers:
+        stage: canary
       statusCode: 200
       responseBody: "version:v2"
