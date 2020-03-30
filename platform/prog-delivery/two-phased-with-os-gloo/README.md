@@ -26,7 +26,7 @@ We'll install the latest [open source Gloo](https://github.com/solo-io/gloo) to 
  version `v1` of an example application to the `echo` namespace. We'll expose this application outside the cluster 
  by creating a route in Gloo, to end up with a picture like this: 
 
-![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/1-setup/setup.png)
+![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/blog-30-mar-20/platform/prog-delivery/two-phased-with-os-gloo/1-setup/setup.png)
 
 ### Deploying Gloo
 
@@ -137,7 +137,7 @@ spec:
 For convenience, we've published this yaml in a repo so we can deploy it with the following command:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/1-setup/echo.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/blog-30-mar-20/platform/prog-delivery/two-phased-with-os-gloo/1-setup/echo.yaml
 ```
 
 We should see the following output:
@@ -217,8 +217,8 @@ spec:
 We can apply these resources with the following commands:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/1-setup/upstream.yaml
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/1-setup/vs.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/blog-30-mar-20/platform/prog-delivery/two-phased-with-os-gloo/1-setup/upstream.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/blog-30-mar-20/platform/prog-delivery/two-phased-with-os-gloo/1-setup/vs.yaml
 ```
 
 Once we apply these two resources, we can start to send traffic to the application through Gloo:
@@ -230,14 +230,14 @@ version:v1
 
 Our setup is complete, and our cluster now looks like this:
 
-![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/1-setup/setup.png)
+![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/blog-30-mar-20/platform/prog-delivery/two-phased-with-os-gloo/1-setup/setup.png)
 
 ## Two-Phased Rollout Strategy
 
 Now we have a new version `v2` of the echo application that we wish to roll out. We know that when the  
 rollout is complete, we are going to end up with this picture:
 
-![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/4-decommissioning-v1/end-state.png)
+![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/blog-30-mar-20/platform/prog-delivery/two-phased-with-os-gloo/4-decommissioning-v1/end-state.png)
 
 However, to get there, we may want to perform a few rounds of testing to ensure the new version of the application
 meets certain correctness and/or performance acceptance criteria. In this post, we'll introduce a two-phased approach to 
@@ -261,7 +261,7 @@ In this phase, we'll deploy `v2`, and then use a header `stage: canary` to start
 traffic to the new version. We'll use this header to perform some basic smoke testing and make sure `v2` is working the 
 way we'd expect:
 
-![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/2-initial-subset-routing-to-v2/subset-routing.png)
+![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/blog-30-mar-20/platform/prog-delivery/two-phased-with-os-gloo/2-initial-subset-routing-to-v2/subset-routing.png)
 
 ### Setting up subset routing
 
@@ -294,7 +294,7 @@ spec:
 We can apply them to the cluster with the following commands:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/2-initial-subset-routing-to-v2/vs-1.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/blog-30-mar-20/platform/prog-delivery/two-phased-with-os-gloo/2-initial-subset-routing-to-v2/vs-1.yaml
 ```
 
 The application should continue to function as before:
@@ -339,7 +339,7 @@ spec:
 We can deploy with the following command:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/2-initial-subset-routing-to-v2/echo-v2.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/blog-30-mar-20/platform/prog-delivery/two-phased-with-os-gloo/2-initial-subset-routing-to-v2/echo-v2.yaml
 ```
 
 Since our gateway is configured to route specifically to the `v1` subset, this should have no effect. However, it does enable 
@@ -405,7 +405,7 @@ spec:
 We can deploy with the following command:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/2-initial-subset-routing-to-v2/vs-2.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/blog-30-mar-20/platform/prog-delivery/two-phased-with-os-gloo/2-initial-subset-routing-to-v2/vs-2.yaml
 ```
 
 ### Canary testing
@@ -500,12 +500,12 @@ spec:
 
 We can apply this virtual service update to the cluster with the following commands:
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/vs-1.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/blog-30-mar-20/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/vs-1.yaml
 ```
 
 Now the cluster looks like this, for any request that doesn't have the `stage: canary` header:
 
-![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/init-traffic-shift.png)
+![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/blog-30-mar-20/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/init-traffic-shift.png)
 
 With the initial weights, we should see the gateway continue to serve `v1` for all traffic.
 
@@ -518,7 +518,7 @@ version:v1
 
 To simulate a load test, let's shift half the traffic to `v2`:
 
-![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/load-test.png)
+![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/blog-30-mar-20/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/load-test.png)
 
 This can be expressed on our virtual service by adjusting the weights:
 
@@ -574,7 +574,7 @@ spec:
 We can apply this to the cluster with the following command:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/vs-2.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/blog-30-mar-20/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/vs-2.yaml
 ```
 
 Now when we send traffic to the gateway, we should see half of the requests return `version:v1` and the 
@@ -600,7 +600,7 @@ We will save these topics for a future post on advanced canary testing use cases
 
 We will continue adjusting weights until eventually, all of the traffic is now being routed to `v2`:
 
-![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/final-shift.png)
+![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/blog-30-mar-20/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/final-shift.png)
 
 Our virtual service will look like this:
 
@@ -655,7 +655,7 @@ spec:
 
 We can apply that to the cluster with the following command: 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/vs-3.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/blog-30-mar-20/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/vs-3.yaml
 ```
 
 Now when we send traffic to the gateway, we should see all of the requests return `version:v2`. 
@@ -703,7 +703,7 @@ spec:
 We can apply this update with the following command: 
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/4-decommissioning-v1/vs.yaml
+kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/blog-30-mar-20/platform/prog-delivery/two-phased-with-os-gloo/4-decommissioning-v1/vs.yaml
 ```
 
 And we can delete the `v1` deployment, which is no longer serving any traffic. 
@@ -714,7 +714,7 @@ kubectl delete deploy -n echo echo-v1
 
 Now our cluster looks like this:
 
-![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/4-decommissioning-v1/end-state.png)
+![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/blog-30-mar-20/platform/prog-delivery/two-phased-with-os-gloo/4-decommissioning-v1/end-state.png)
 
 And requests to the gateway return this:
 
@@ -733,7 +733,7 @@ the proxy.
 Running through these steps over a 15 minute period while sending a significant load to these routes on the proxy 
 yielded the following operational dashboards:
 
-![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/perf-test.png)
+![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/blog-30-mar-20/platform/prog-delivery/two-phased-with-os-gloo/perf-test.png)
 
 The charts show a fluctuating load of 90-250 rps hitting the proxy. While the two phased rollout was commencing, we can 
 observe that Envoy experienced no spikes in request latency, nor did it respond with any errors. 
