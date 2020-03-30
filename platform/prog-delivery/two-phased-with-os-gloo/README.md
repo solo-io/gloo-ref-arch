@@ -1,6 +1,6 @@
 # Two-phased canary rollout with Open Source Gloo
 
-Every day at Solo, we're talking to platform owners, architects, and engineers who are using [Gloo](https://www.solo.io/products/gloo/) as an API gateway
+Every day at [Solo](https://www.solo.io/), we're talking to platform owners, architects, and engineers who are using [Gloo](https://www.solo.io/products/gloo/) as an API gateway
 to expose their applications to end users. These applications may span legacy monoliths, microservices, managed cloud services, and Kubernetes 
 clusters. Fortunately, **Gloo makes it easy to set up routes to manage, secure, and observe application traffic while 
 supporting a flexible deployment architecture** to meet our customers' varying production needs.
@@ -165,7 +165,8 @@ replicaset.apps/echo-v1-66dbfffb79   1         1         1       7s
 
 ### Exposing outside the cluster with Gloo
 
-We can now expose this service outside the cluster with Gloo. First, we'll model the application as a Gloo `Upstream`, which is Gloo's abstraction 
+We can now expose this service outside the cluster with Gloo. First, we'll model the application as a Gloo 
+[Upstream](https://docs.solo.io/gloo/latest/introduction/architecture/concepts/#upstreams), which is Gloo's abstraction 
 for a traffic destination:
 
 ```yaml
@@ -190,7 +191,8 @@ spec:
 Here, we're setting up subsets based on the `version` label. We don't have to use this in our routes, but later
 we'll start to use it to support our canary workflow. 
 
-We can now create a route to this upstream in Gloo by defining a **virtual service**:
+We can now create a route to this upstream in Gloo by defining a 
+[Virtual Service](https://docs.solo.io/gloo/latest/introduction/architecture/concepts/#virtual-services):
 
 ```yaml
 apiVersion: gateway.solo.io/v1
@@ -437,7 +439,8 @@ cases in canary testing.
 
 At this point, we've deployed `v2`, and created a route for canary testing. If we are satisfied with the 
 results of the testing, we can move on to phase 2 and start shifting the load from `v1` to `v2`. We'll use 
-[weighted destinations](LINK) in Gloo to manage the load during the migration. 
+[weighted destinations](https://docs.solo.io/gloo/latest/guides/traffic_management/destination_types/multi_destination/) 
+in Gloo to manage the load during the migration. 
 
 ### Setting up the weighted destinations
 
@@ -732,6 +735,9 @@ yielded the following operational dashboards:
 
 ![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/perf-test.png)
 
+The charts show a fluctuating load of 90-250 rps hitting the proxy. While the two phased rollout was commencing, we can 
+observe that Envoy experienced no spikes in request latency, nor did it respond with any errors. 
+
 ## Other Advanced Topics
 
 Over the course of this post, we collected a few topics that could be a good starting point for advanced exploration:
@@ -746,4 +752,4 @@ A few other topics that warrant further exploration:
 * Utilizing Gloo's **delegation** feature and Kubernetes **RBAC** to decentralize the configuration management safely
 * Fully automating the continuous delivery process by applying **GitOps** principles and using tools like **Flux** to push config to the cluster
 * Supporting **hybrid** or **non-Kubernetes** application use-cases by setting up Gloo with a different deployment pattern
-* Adding a phase of testing where **traffic shadowing** is used to send traffic to the new version 
+* Utilizing **traffic shadowing** to begin testing the new version with realistic data before shifting production traffic to it
