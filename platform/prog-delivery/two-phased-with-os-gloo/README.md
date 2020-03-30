@@ -26,7 +26,7 @@ We'll install the latest [open source Gloo](https://github.com/solo-io/gloo) to 
  version `v1` of an example application to the `echo` namespace. We'll expose this application outside the cluster 
  by creating a route in Gloo, to end up with a picture like this: 
 
-![](1-setup/setup.png)
+![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/1-setup/setup.png)
 
 ### Deploying Gloo
 
@@ -65,7 +65,7 @@ Gloo was successfully installed!
 Before long, we can see all the Gloo pods running in the `gloo-system` namespace:
 
 ```bash
-➜ k get pod -n gloo-system
+➜ kubectl get pod -n gloo-system
 NAME                             READY   STATUS    RESTARTS   AGE
 discovery-58f8856bd7-4fftg       1/1     Running   0          13s
 gateway-66f86bc8b4-n5crc         1/1     Running   0          13s
@@ -149,7 +149,7 @@ service/echo created
 
 And we should be able to see all the resources healthy in the `echo` namespace:
 ```bash
-➜ k get all -n echo
+➜ kubectl get all -n echo
 NAME                           READY   STATUS    RESTARTS   AGE
 pod/echo-v1-66dbfffb79-287s5   1/1     Running   0          6s
 
@@ -228,14 +228,14 @@ version:v1
 
 Our setup is complete, and our cluster now looks like this:
 
-![](1-setup/setup.png)
+![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/1-setup/setup.png)
 
 ## Two-Phased Rollout Strategy
 
 Now we have a new version `v2` of the echo application that we wish to roll out. We know that when the  
 rollout is complete, we are going to end up with this picture:
 
-![](4-decommissioning-v1/end-state.png)
+![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/4-decommissioning-v1/end-state.png)
 
 However, to get there, we may want to perform a few rounds of testing to ensure the new version of the application
 meets certain correctness and/or performance acceptance criteria. In this post, we'll introduce a two-phased approach to 
@@ -259,7 +259,7 @@ In this phase, we'll deploy `v2`, and then use a header `stage: canary` to start
 traffic to the new version. We'll use this header to perform some basic smoke testing and make sure `v2` is working the 
 way we'd expect:
 
-![](2-initial-subset-routing-to-v2/subset-routing.png)
+![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/2-initial-subset-routing-to-v2/subset-routing.png)
 
 ### Setting up subset routing
 
@@ -342,6 +342,22 @@ kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/
 
 Since our gateway is configured to route specifically to the `v1` subset, this should have no effect. However, it does enable 
 `v2` to be routable from the gateway if the `v2` subset is configured for a route. 
+
+Make sure `v2` is running before moving on:
+
+```bash
+➜ kubectl get pod -n echo
+NAME                       READY   STATUS    RESTARTS   AGE
+echo-v1-66dbfffb79-2qw86   1/1     Running   0          5m25s
+echo-v2-86584fbbdb-slp44   1/1     Running   0          93s
+```
+
+The application should continue to function as before:
+
+```bash
+➜ curl $(glooctl proxy url)/
+version:v1
+```
 
 ### Adding a route to v2 for canary testing
 
@@ -486,7 +502,7 @@ kubectl apply -f https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/
 
 Now the cluster looks like this, for any request that doesn't have the `stage: canary` header:
 
-![](3-progressive-traffic-shift-to-v2/init-traffic-shift.png)
+![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/init-traffic-shift.png)
 
 With the initial weights, we should see the gateway continue to serve `v1` for all traffic.
 
@@ -499,7 +515,7 @@ version:v1
 
 To simulate a load test, let's shift half the traffic to `v2`:
 
-![](3-progressive-traffic-shift-to-v2/load-test.png)
+![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/load-test.png)
 
 This can be expressed on our virtual service by adjusting the weights:
 
@@ -581,7 +597,7 @@ We will save these topics for a future post on advanced canary testing use cases
 
 We will continue adjusting weights until eventually, all of the traffic is now being routed to `v2`:
 
-![](3-progressive-traffic-shift-to-v2/final-shift.png)
+![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/3-progressive-traffic-shift-to-v2/final-shift.png)
 
 Our virtual service will look like this:
 
@@ -650,7 +666,7 @@ version:v2
 version:v2
 ```
 
-### Decommissioning the old upstream
+### Decommissioning v1
    
 At this point, we have deployed the new version of our application, conducted correctness tests using subset routing, 
 conducted load and performance tests by progressively shifting traffic to the new version, and finished 
@@ -695,7 +711,7 @@ kubectl delete deploy -n echo echo-v1
 
 Now our cluster looks like this:
 
-![](4-decommissioning-v1/end-state.png)
+![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/4-decommissioning-v1/end-state.png)
 
 And requests to the gateway return this:
 
@@ -705,6 +721,16 @@ version:v2
 ```
 
 We have now completed our two-phased canary rollout of an application update using Gloo!
+
+### Checking our work
+
+Envoy publishes a large number of stats that we can scrape and use to track the health of downstream requests through
+the proxy. 
+
+Running through these steps over a 15 minute period while sending a significant load to these routes on the proxy 
+yielded the following operational dashboards:
+
+![](https://raw.githubusercontent.com/solo-io/gloo-ref-arch/master/platform/prog-delivery/two-phased-with-os-gloo/perf-test.png)
 
 ## Other Advanced Topics
 
