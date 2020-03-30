@@ -753,3 +753,14 @@ A few other topics that warrant further exploration:
 * Fully automating the continuous delivery process by applying **GitOps** principles and using tools like **Flux** to push config to the cluster
 * Supporting **hybrid** or **non-Kubernetes** application use-cases by setting up Gloo with a different deployment pattern
 * Utilizing **traffic shadowing** to begin testing the new version with realistic data before shifting production traffic to it
+
+## Get Involved in the Gloo Community
+
+Gloo has a large and growing community of open source users, in addition to an enterprise customer base. To learn more about 
+Gloo:
+* Check out the [repo](https://github.com/solo-io/gloo), where you can see the code and file issues
+* Check out the [docs](https://docs.solo.io/gloo/latest), which have an extensive collection of guides and examples
+* Join the [slack channel](http://slack.solo.io/) and start chatting with the Solo engineering team and user community
+
+If you'd like to get in touch with me (feedback is always appreciated!), you can find me on Slack or email me at 
+**rick.ducott@solo.io**. 
