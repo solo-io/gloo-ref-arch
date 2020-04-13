@@ -1,5 +1,0 @@
-cluster:
-  minikube:
-    version: 1.17.0
-    featureGates:
-      - EndpointSlice=true

@@ -1,6 +1,0 @@
-gloo:
-  accessLogger:
-    enabled: true
-  gatewayProxies:
-    gatewayProxy:
-      readConfig: true

@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: petclinic-vets
+  name: petclinic-vets
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: petclinic-vets
+  template:
+    metadata:
+      labels:
+        app: petclinic-vets
+    spec:
+      containers:
+        - image: quay.io/sololabs/petclinic-vets:v3
+          imagePullPolicy: IfNotPresent
+          name: petclinic-vets
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          env:
+            - name: DB_USER
+              value: "root"
+            - name: DB_PASSWORD
+              value: "petclinic"
+            - name: DB_HOST
+              value: "petclinic-db.default.svc.cluster.local"
+            - name: DB_NAME
+              value: "petclinic"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 16Mi
+            limits:
+              cpu: 250m
+              memory: 32Mi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: petclinic-vets
+  namespace: default
+spec:
+  ports:
+    - name: http-ui
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: petclinic-vets
+  type: ClusterIP

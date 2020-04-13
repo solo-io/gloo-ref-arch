@@ -1,0 +1,27 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: foxtrot-v2
+  namespace: foxtrot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: foxtrot
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: foxtrot
+        version: v2
+    spec:
+      containers:
+        - image: hashicorp/http-echo
+          args:
+            - "-text=version:foxtrot-v2"
+            - -listen=:8080
+          imagePullPolicy: Always
+          name: foxtrot-v2
+          ports:
+            - containerPort: 8080

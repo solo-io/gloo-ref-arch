@@ -1,0 +1,17 @@
+apiVersion: gloo.solo.io/v1
+kind: Upstream
+metadata:
+  name: valet-test-server-valet-test-server-443-fixed
+  namespace: gloo-system
+spec:
+  discoveryMetadata: {}
+  kube:
+    selector:
+      app: valet-test-server
+    serviceName: valet-test-server
+    serviceNamespace: valet-test-server
+    servicePort: 443
+  sslConfig:
+    secretRef:
+      name: valet-test.com
+      namespace: valet-test-server

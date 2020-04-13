@@ -1,0 +1,4 @@
+spec:
+  gloo:
+    invalidConfigPolicy:
+      replaceInvalidRoutes: false

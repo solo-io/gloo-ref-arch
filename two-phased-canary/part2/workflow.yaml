@@ -1,0 +1,270 @@
+setup:
+- installHelmChart:
+    namespace: gloo-system
+    releaseName: gloo
+    releaseUri: https://storage.googleapis.com/gloo-ee-helm/charts/gloo-ee-1.3.0.tgz
+    set:
+      license_key: env:LICENSE_KEY
+    valuesFiles:
+    - values.yaml
+    waitForPods: true
+- bash:
+    inline: kubectl delete virtualservices.gateway.solo.io -n gloo-system --all
+- bash:
+    inline: glooctl check
+- patch:
+    kubeType: settings
+    name: default
+    namespace: gloo-system
+    patchType: merge
+    path: settings-patch-revert.yaml
+- bash:
+    inline: kubectl delete ns echo foxtrot --ignore-not-found
+steps:
+- apply:
+    path: echo.yaml
+  id: deploy-echo
+- apply:
+    path: foxtrot.yaml
+  id: deploy-foxtrot
+- id: wait-echo
+  waitForPods:
+    namespace: echo
+- id: wait-foxtrot
+  waitForPods:
+    namespace: foxtrot
+- apply:
+    path: upstream-echo.yaml
+  id: deploy-upstream-echo
+- apply:
+    path: upstream-foxtrot.yaml
+  id: deploy-upstream-foxtrot
+- apply:
+    path: rt-echo-1.yaml
+  id: deploy-rt-echo
+- apply:
+    path: rt-foxtrot-1.yaml
+  id: deploy-rt-foxtrot
+- apply:
+    path: vs.yaml
+  id: deploy-vs
+- curl:
+    path: /echo
+    responseBody: version:echo-v1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    path: /foxtrot
+    responseBody: version:foxtrot-v1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- apply:
+    path: foxtrot-v2.yaml
+  id: deploy-foxtrot-v2
+- id: wait-foxtrot
+  waitForPods:
+    namespace: foxtrot
+- apply:
+    path: rt-foxtrot-2.yaml
+  id: deploy-rt-foxtrot-2
+- curl:
+    path: /echo
+    responseBody: version:echo-v1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    path: /foxtrot
+    responseBody: version:foxtrot-v1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    headers:
+      stage: canary
+    path: /foxtrot
+    responseBody: version:foxtrot-v2
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- apply:
+    path: rt-foxtrot-3.yaml
+  id: deploy-rt-foxtrot-3
+- curl:
+    path: /echo
+    responseBody: version:echo-v1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    path: /foxtrot
+    responseBody: version:foxtrot-v1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    headers:
+      stage: canary
+    path: /foxtrot
+    responseBody: version:foxtrot-v2
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- apply:
+    path: echo-v2.yaml
+  id: deploy-echo-v2
+- apply:
+    path: rt-echo-2.yaml
+  id: deploy-rt-echo-2
+- curl:
+    path: /echo
+    responseBody: version:echo-v1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    headers:
+      stage: canary
+    path: /echo
+    responseBody: version:echo-v2
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    path: /foxtrot
+    responseBody: version:foxtrot-v1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    headers:
+      stage: canary
+    path: /foxtrot
+    responseBody: version:foxtrot-v2
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- apply:
+    path: rt-echo-3.yaml
+  id: deploy-rt-echo-3
+- apply:
+    path: rt-foxtrot-4.yaml
+  id: deploy-rt-foxtrot-4
+- curl:
+    path: /echo
+    responseBody: version:echo-v1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    headers:
+      stage: canary
+    path: /echo
+    responseBody: version:echo-v2
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    path: /foxtrot
+    responseBody: version:foxtrot-v1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    headers:
+      stage: canary
+    path: /foxtrot
+    responseBody: version:foxtrot-v2
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- id: settings-patch
+  patch:
+    kubeType: settings
+    name: default
+    namespace: gloo-system
+    patchType: merge
+    path: settings-patch.yaml
+- curl:
+    path: /foxtrot
+    responseBody: version:foxtrot-v2
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    headers:
+      stage: canary
+    path: /foxtrot
+    responseBody: version:foxtrot-v2
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    path: /echo
+    responseBody: version:echo-v1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    headers:
+      stage: canary
+    path: /echo
+    responseBody: Gloo Gateway has invalid configuration. Administrators should run
+      `glooctl check` to find and fix config errors.
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 404
+- apply:
+    path: rt-echo-2.yaml
+  id: deploy-rt-echo-2
+- apply:
+    path: rt-foxtrot-5.yaml
+  id: deploy-rt-foxtrot-5
+- delete:
+    path: foxtrot-v1.yaml
+  id: delete-foxtrot-v1
+- curl:
+    path: /echo
+    responseBody: version:echo-v1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    headers:
+      stage: canary
+    path: /echo
+    responseBody: version:echo-v2
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    path: /foxtrot
+    responseBody: version:foxtrot-v2
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200

@@ -1,0 +1,22 @@
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  name: app
+  namespace: gloo-system
+spec:
+  virtualHost:
+    domains:
+      - '*'
+    routes:
+      - matchers:
+          - prefix: /echo
+        delegateAction:
+          selector:
+            namespaces:
+              - echo
+      - matchers:
+          - prefix: /foxtrot
+        delegateAction:
+          selector:
+            namespaces:
+              - foxtrot

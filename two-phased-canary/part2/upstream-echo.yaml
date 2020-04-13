@@ -1,0 +1,16 @@
+apiVersion: gloo.solo.io/v1
+kind: Upstream
+metadata:
+  name: echo
+  namespace: gloo-system
+spec:
+  kube:
+    selector:
+      app: echo
+    serviceName: echo
+    serviceNamespace: echo
+    servicePort: 8080
+    subsetSpec:
+      selectors:
+        - keys:
+            - version

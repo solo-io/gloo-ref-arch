@@ -1,0 +1,4 @@
+# We can turn discovery off, as it won't be used for this workflow
+gloo:
+  discovery:
+    enabled: false

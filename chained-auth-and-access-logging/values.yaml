@@ -1,0 +1,10 @@
+gloo:
+  accessLogger:
+    enabled: true
+  gatewayProxies:
+    gatewayProxy:
+      readConfig: true
+  discovery:
+    enabled: false
+settings:
+  disableProxyGarbageCollection: true

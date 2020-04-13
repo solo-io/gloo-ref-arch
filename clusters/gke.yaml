@@ -1,7 +1,0 @@
-cluster:
-  gke:
-    name: gloo-ref-arch
-    location: us-east1
-    project: solo-test-236622
-    options:
-      version: latest

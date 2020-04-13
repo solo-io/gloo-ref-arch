@@ -1,0 +1,23 @@
+spec:
+  options:
+    accessLoggingService:
+      accessLog:
+        - fileSink:
+            path: /dev/stdout
+            stringFormat: ""
+        - fileSink:
+            path: /dev/access-logs.txt
+            stringFormat: ""
+        - fileSink:
+            path: /dev/default-gateway-proxy-log.json
+            stringFormat: ""
+        - fileSink:
+            path: /dev/gateway-proxy-log.json
+            jsonFormat:
+              protocol: "%PROTOCOL%"
+              duration: "%DURATION%"
+              upstreamCluster: "%UPSTREAM_CLUSTER%"
+              upstreamHost: "%UPSTREAM_HOST%"
+        - grpcService:
+            logName: example
+            staticClusterName: access_log_cluster

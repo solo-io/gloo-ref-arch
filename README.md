@@ -6,65 +6,16 @@ This repos contain a set of examples that can be run manually with README's for 
 
 ### Automation
 
-Using Valet, each of these can be automatically executed or stepped through. By convention, there are three options:
-
-* `valet ensure -f workflow.yaml`: This runs the entire workflow, as an automated test. This leaves the cluster in the state at the end of the workflow, so `valet teardown -f workflow.yaml` can be used to clean up. 
-* `valet ensure -f 1-...yaml`: By convention, each workflow is broken down into a few sub-workflows, which can be individually run execute specific parts of the overall workflow. 
-* `valet ensure -f workflow.yaml -s`: The `-s|--step` flag tells Valet to step through the workflow and pause at each step, for the most granular execution. 
-
-### Installing Valet
-
-Valet can be installed from source(https://github.com/solo-io/valet) or can be downloaded and added to your PATH manually:
-* [OSX](https://storage.googleapis.com/valet-bin/0.5.0/valet-osx-amd64)
-* [Linux](https://storage.googleapis.com/valet-bin/0.5.0/valet-linux-amd64)
+Each of these workflows can be run as a go e2e test, which calls out to a library called `Valet` to automate various 
+steps. Simply navigate to the desired directory and run `go test .`. 
 
 ## Table of Contents
 
-### Standard Demos
+* [Petclinic](petclinic): Deploy a monolith and expose it to users with Gloo. Deploy a microservice, see the new upstream discovered, and add a route to change the application without touching the monolith. Then add a new upstream for AWS, discover lambdas, and create a route to one to fix a bug in the monolith. 
+* Two-phased canary rollout
+    * [Part 1](two-phased-canary/part1): Perform a canary rollout in two phases. First, route a small slice of traffic to the new version for correctness testing. Then, use weighted destinations to shift the load to the new version. 
+    * [Part 2](two-phased-canary/part2): Like part 1, but now with multiple independent teams. Use route table delegation to break up ownership of the proxy across a central ops team, responsible for the domain, and different dev teams responsible for routes to their service. Use route replacement to ensure one team's mistake doesn't block another team. 
+* [Chained Auth and Access Logging](chained-auth-and-access-logging): Expose an application securely by integrating with Google as an Identity Provider. Chain OIDC login via Google with additional authorization checks, by writing an OPA check against the JWT. Setup multiple access loggers to record traffic through the proxy. 
+* [Rate Limiting, WAF, and OPA](rate-limiting-waf-and-opa): Explore increasingly complex use cases for rate limiting on APIs exposed through Gloo. Combine rate limiting with the JWT validation filter in Envoy, Gloo's WAF capabilities, and extra JWT authorization in OPA to maximize security in your production environment.  
+* [MTLS](mtls): Deploy a test server and explore different ways to set up SSL verification and termination. 
 
-* [Petclinic - Migrating to Microservices](demos/extend-monolith)
-
-### Platform Operations
-
-* Decentralized Config Management
-  * [Simple Delegation](platform/delegation/simple)
-* [Multiple Gateways](platform/multiple-gateways)
-* Multiple Proxies
-  * [Internal-External](platform/multiple-proxies/internal-external)
-* [Namespaced Gloo](platform/namespaced)
-* Canary Rollout
-  * [Two-Phased Approach with Open Source Gloo](platform/prog-delivery/two-phased-with-os-gloo)
-  
-### Security Examples
-
-* [Access Logging](security/access-log)
-* [Data Loss Prevention](security/dlp)
-
-#### Rate Limiting
-
-* [Basic](security/rate-limit/basic)
-* [Multiple Rules and Priority](security/rate-limit/rule-priority)
-* [From JWT Claims](security/rate-limit/from-jwt-claims)
-
-#### Auth
-
-* [Basic](security/auth/basic)
-* OAuth
-  * [Google](security/auth/oauth/google)
-* [OPA](security/auth/opa)
-  
-#### (m)TLS
-
-* Server TLS
-  * [Basic](security/tls/server-tls/basic)
-  * [SNI](security/tls/server-tls/sni)
-* [Upstream TLS](security/tls/upstream-tls)
-
-#### WAF    
-  
-* [Basic](security/waf/basic)
-
-### Traffic Management
-
-* [GRPC](traffic-management/grpc)
-* [Response Transformations](traffic-management/transformations/response)

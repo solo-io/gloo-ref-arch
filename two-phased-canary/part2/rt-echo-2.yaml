@@ -1,0 +1,30 @@
+apiVersion: gateway.solo.io/v1
+kind: RouteTable
+metadata:
+  name: echo-routes
+  namespace: echo
+spec:
+  routes:
+    - matchers:
+        - headers:
+            - name: stage
+              value: canary
+          prefix: /echo
+      routeAction:
+        single:
+          upstream:
+            name: echo
+            namespace: gloo-system
+          subset:
+            values:
+              version: v2
+    - matchers:
+        - prefix: /echo
+      routeAction:
+        single:
+          upstream:
+            name: echo
+            namespace: gloo-system
+          subset:
+            values:
+              version: v1

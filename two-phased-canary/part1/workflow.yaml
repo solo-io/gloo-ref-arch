@@ -1,0 +1,135 @@
+setup:
+- installHelmChart:
+    namespace: gloo-system
+    releaseName: gloo
+    releaseUri: https://storage.googleapis.com/gloo-ee-helm/charts/gloo-ee-1.3.0.tgz
+    set:
+      license_key: env:LICENSE_KEY
+    valuesFiles:
+    - values.yaml
+    waitForPods: true
+- bash:
+    inline: kubectl delete virtualservices.gateway.solo.io -n gloo-system --all
+- bash:
+    inline: glooctl check
+steps:
+- apply:
+    path: echo.yaml
+  id: deploy-echo
+- id: wait-1
+  waitForPods:
+    namespace: echo
+- apply:
+    path: upstream.yaml
+  id: deploy-upstream
+- apply:
+    path: vs-1.yaml
+  id: deploy-vs-1
+- curl:
+    path: /
+    responseBody: version:v1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- apply:
+    path: vs-2.yaml
+  id: deploy-vs-2
+- curl:
+    path: /
+    responseBody: version:v1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- apply:
+    path: echo-v2.yaml
+  id: deploy-echo-v2
+- id: wait-1
+  waitForPods:
+    namespace: echo
+- apply:
+    path: vs-3.yaml
+  id: deploy-vs-3
+- curl:
+    path: /
+    responseBody: version:v1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    headers:
+      stage: canary
+    path: /
+    responseBody: version:v2
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- apply:
+    path: vs-4.yaml
+  id: deploy-vs-4
+- curl:
+    path: /
+    responseBody: version:v1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    headers:
+      stage: canary
+    path: /
+    responseBody: version:v2
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- apply:
+    path: vs-5.yaml
+  id: deploy-vs-5
+- curl:
+    path: /
+    responseBody: version:v1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    path: /
+    responseBody: version:v2
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- apply:
+    path: vs-6.yaml
+  id: deploy-vs-6
+- curl:
+    path: /
+    responseBody: version:v2
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- delete:
+    path: echo-v1.yaml
+  id: delete-echo-v1
+- curl:
+    path: /
+    responseBody: version:v2
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- apply:
+    path: vs-7.yaml
+  id: deploy-vs-7
+- curl:
+    path: /
+    responseBody: version:v2
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200

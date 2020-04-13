@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: foxtrot
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: foxtrot-v1
+  namespace: foxtrot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: foxtrot
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: foxtrot
+        version: v1
+    spec:
+      containers:
+        - image: hashicorp/http-echo
+          args:
+            - "-text=version:foxtrot-v1"
+            - -listen=:8080
+          imagePullPolicy: Always
+          name: foxtrot-v1
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: foxtrot
+  namespace: foxtrot
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app: foxtrot

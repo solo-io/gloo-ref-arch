@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: valet-test-server
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: valet-test-server
+  namespace: valet-test-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: valet-test-server
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: valet-test-server
+        version: v1
+    spec:
+      containers:
+        - image: "quay.io/solo-io/valet-test-server:0.5.0-26-ga282188-dirty"
+          imagePullPolicy: Always
+          name: valet-test-server
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 8443
+              name: https
+          env:
+            - name: "CERT_FILE"
+              value: "/etc/certs/tls.crt"
+            - name: "KEY_FILE"
+              value: "/etc/certs/tls.key"
+          volumeMounts:
+            - name: certs
+              mountPath: "/etc/certs"
+              readOnly: true
+      volumes:
+        - name: certs
+          secret:
+            secretName: test-tls
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: valet-test-server
+  namespace: valet-test-server
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+    - port: 443
+      targetPort: 8443
+      protocol: TCP
+      name: https
+  selector:
+    app: valet-test-server

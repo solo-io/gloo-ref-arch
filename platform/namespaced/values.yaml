@@ -1,8 +1,0 @@
-global:
-  glooRbac:
-    namespaced: true
-settings:
-  singleNamespace: true
-gloo:
-  discovery:
-    fdsMode: BLACKLIST

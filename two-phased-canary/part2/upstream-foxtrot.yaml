@@ -1,0 +1,16 @@
+apiVersion: gloo.solo.io/v1
+kind: Upstream
+metadata:
+  name: foxtrot
+  namespace: gloo-system
+spec:
+  kube:
+    selector:
+      app: foxtrot
+    serviceName: foxtrot
+    serviceNamespace: foxtrot
+    servicePort: 8080
+    subsetSpec:
+      selectors:
+        - keys:
+            - version

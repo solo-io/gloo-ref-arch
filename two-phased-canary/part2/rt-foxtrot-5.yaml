@@ -1,0 +1,17 @@
+apiVersion: gateway.solo.io/v1
+kind: RouteTable
+metadata:
+  name: foxtrot-routes
+  namespace: foxtrot
+spec:
+  routes:
+    - matchers:
+        - prefix: /foxtrot
+      routeAction:
+        single:
+          upstream:
+            name: foxtrot
+            namespace: gloo-system
+          subset:
+            values:
+              version: v2
