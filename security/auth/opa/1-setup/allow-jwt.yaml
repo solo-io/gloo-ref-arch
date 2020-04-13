@@ -1,0 +1,15 @@
+apiVersion: v1
+data:
+  opa-policy.rego: |-
+    package test
+    default allow = false
+    allow {
+        output := split(input.http_request.headers.authorization, " ")
+        [header, payload, signature] = io.jwt.decode(output[1])
+        trace(sprintf("payload: %v", [payload]))
+        payload["sub"] = "1234567890"
+    }
+kind: ConfigMap
+metadata:
+  name: allow-jwt
+  namespace: gloo-system

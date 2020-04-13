@@ -1,3 +1,5 @@
+# This is a valet workflow. It can be run with `valet ensure -f ...` from this directory
+
 steps:
   - apply:
       manifest:

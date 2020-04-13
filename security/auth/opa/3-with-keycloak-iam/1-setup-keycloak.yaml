@@ -1,0 +1,13 @@
+steps:
+  - curl:
+      method: POST
+      path: /auth/
+      portForward:
+        namespace: keycloak
+        # TODO: support pods
+        name: keycloak-0
+      # TODO: this needs to be a template file
+      body: "file:realm.json"
+      values:
+        GoogleClientId: "env:GOOGLE_KEYCLOAK_CLIENT_ID"
+        GoogleClientSecret: "env:GOOGLE_KEYCLOAK_CLIENT_SECRET"

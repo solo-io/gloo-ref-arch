@@ -1,0 +1,20 @@
+keycloak:
+  username: admin
+  password: admin
+  extraArgs: -Dkeycloak.import=/realm/realm.json
+  extraVolumes: |
+    - name: realm-secret
+      secret:
+        secretName: realm-secret
+    - name: data
+      emptyDir: {}
+  extraVolumeMounts: |
+    - name: realm-secret
+      mountPath: "/realm/"
+      readOnly: true
+  service:
+    httpPort: 8080
+    type: LoadBalancer
+
+
+

@@ -1,0 +1,20 @@
+title: Setup oauth
+description:
+  - Now we will update the virtual service to require authentication via oauth with Google as the OIDC provider.
+steps:
+  - apply:
+      template:
+        path: oauth-secret.tmpl
+    values:
+      ClientSecret: "env:GOOGLE_CLIENT_SECRET"
+  - apply:
+      template:
+        path: auth-config.tmpl
+    values:
+      ClientId: "env:GOOGLE_CLIENT_ID"
+  - apply:
+      manifest:
+        path: allow-jwt.yaml
+  - apply:
+      manifest:
+        path: vs-petclinic-3.yaml

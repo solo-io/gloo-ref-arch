@@ -1,0 +1,23 @@
+apiVersion: enterprise.gloo.solo.io/v1
+kind: AuthConfig
+metadata:
+  name: google-oauth-then-opa
+  namespace: gloo-system
+spec:
+  configs:
+    - oauth:
+        app_url: http://localhost:8080
+        callback_path: /callback
+        client_id: {{ .ClientId }}
+        client_secret_ref:
+          name: google-oauth
+          namespace: gloo-system
+        issuer_url: https://accounts.google.com
+        scopes:
+          - email
+          - profile
+    - opa_auth:
+        modules:
+          - name: allow-jwt
+            namespace: gloo-system
+        query: "data.test.allow == true"

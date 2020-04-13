@@ -1,7 +1,7 @@
 apiVersion: gateway.solo.io/v1
 kind: VirtualService
 metadata:
-  name: petstore
+  name: petclinic
   namespace: gloo-system
 spec:
   virtualHost:
@@ -9,11 +9,14 @@ spec:
       - '*'
     routes:
       - matchers:
-          - exact: /sample-route-1
+          - prefix: /
         routeAction:
           single:
             upstream:
-              name: default-petstore-8080
+              name: default-petclinic-8080
               namespace: gloo-system
-        options:
-          prefixRewrite: /api/pets
+    options:
+      extauth:
+        configRef:
+          name: jwt-opa
+          namespace: gloo-system

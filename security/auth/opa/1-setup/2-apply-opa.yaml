@@ -1,0 +1,33 @@
+steps:
+  - apply:
+      manifest:
+        path: allow-jwt.yaml
+  - apply:
+      manifest:
+        path: opa-auth.yaml
+  - apply:
+      manifest:
+        path: vs-petclinic-2.yaml
+  - curl:
+      service:
+        name: gateway-proxy
+        namespace: gloo-system
+      path: /
+      statusCode: 403
+  - curl:
+      service:
+        name: gateway-proxy
+        namespace: gloo-system
+      path: /
+      statusCode: 200
+      headers:
+        Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+  - curl:
+      method: PUT
+      body: '{ "level": "debug" }'
+      statusCode: 200
+      path: /logging
+      portForward:
+        deploymentName: extauth
+        namespace: gloo-system
+        port: 9091

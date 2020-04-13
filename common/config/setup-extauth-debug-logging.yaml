@@ -1,0 +1,12 @@
+# Requires valet 0.5.1+
+
+steps:
+  - curl:
+      method: PUT
+      body: '{ "level": "debug" }'
+      statusCode: 200
+      path: /logging
+      portForward:
+        deploymentName: extauth
+        namespace: gloo-system
+        port: 9091
