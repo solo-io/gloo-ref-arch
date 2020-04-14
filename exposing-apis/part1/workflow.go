@@ -1,4 +1,4 @@
-package rate_limiting_waf_and_opa
+package part1
 
 import (
 	"context"

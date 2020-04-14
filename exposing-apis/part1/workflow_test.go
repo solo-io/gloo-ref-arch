@@ -1,4 +1,4 @@
-package rate_limiting_waf_and_opa_test
+package part1_test
 
 import (
 	. "github.com/onsi/ginkgo"
