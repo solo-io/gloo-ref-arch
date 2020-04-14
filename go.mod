@@ -6,7 +6,7 @@ require (
 	github.com/onsi/ginkgo v1.10.1
 	github.com/onsi/gomega v1.7.0
 	github.com/solo-io/go-utils v0.14.0
-	github.com/solo-io/valet v0.6.0
+	github.com/solo-io/valet v0.6.1-0.20200414173954-7beac1f0648b
 )
 
 replace (

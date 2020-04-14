@@ -1,0 +1,23 @@
+apiVersion: enterprise.gloo.solo.io/v1
+kind: AuthConfig
+metadata:
+  name: keycloak-oauth-then-opa
+  namespace: gloo-system
+spec:
+  configs:
+    - oauth:
+        app_url: "http://35.227.127.150:80/"
+        callback_path: /callback
+        client_id: demo-oidc
+        client_secret_ref:
+          name: keycloak-oauth
+          namespace: gloo-system
+        issuer_url: "http://34.74.86.125.xip.io:8080/auth/realms/demo/"
+        scopes:
+          - email
+          - test
+    - opa_auth:
+        modules:
+          - name: allow-jwt
+            namespace: gloo-system
+        query: "data.test.allow == true"

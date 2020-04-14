@@ -15,7 +15,8 @@ steps. Simply navigate to the desired directory and run `go test .`.
 * Two-phased canary rollout
     * [Part 1](two-phased-canary/part1): Perform a canary rollout in two phases. First, route a small slice of traffic to the new version for correctness testing. Then, use weighted destinations to shift the load to the new version. 
     * [Part 2](two-phased-canary/part2): Like part 1, but now with multiple independent teams. Use route table delegation to break up ownership of the proxy across a central ops team, responsible for the domain, and different dev teams responsible for routes to their service. Use route replacement to ensure one team's mistake doesn't block another team. 
-* [Chained Auth and Access Logging](chained-auth-and-access-logging): Expose an application securely by integrating with Google as an Identity Provider. Chain OIDC login via Google with additional authorization checks, by writing an OPA check against the JWT. Setup multiple access loggers to record traffic through the proxy. 
+* Chained Auth and Access Logging: 
+    * [Part 1](chained-auth-and-access-logging/part1) Expose an application securely by integrating with Google as an Identity Provider. Chain OIDC login via Google with additional authorization checks, by writing an OPA check against the JWT. Setup multiple access loggers to record traffic through the proxy. 
 * [Rate Limiting, WAF, and OPA](rate-limiting-waf-and-opa): Explore increasingly complex use cases for rate limiting on APIs exposed through Gloo. Combine rate limiting with the JWT validation filter in Envoy, Gloo's WAF capabilities, and extra JWT authorization in OPA to maximize security in your production environment.  
 * [MTLS](mtls): Deploy a test server and explore different ways to set up SSL verification and termination. 
 

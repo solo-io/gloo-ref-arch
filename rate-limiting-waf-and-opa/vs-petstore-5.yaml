@@ -46,7 +46,7 @@ spec:
                   -----END PUBLIC KEY-----
       ratelimit:
         rateLimits:
-          # generate descriptors for Rule 1 and 2
+          # generate descriptors for Rule 1, 2, 4
           - actions:
               - requestHeaders:
                   descriptorKey: type

@@ -2,10 +2,10 @@ package rate_limiting_waf_and_opa
 
 import (
 	"context"
+	"github.com/solo-io/gloo-ref-arch/utils/gloo"
 	"github.com/solo-io/valet/pkg/step/check"
 	"github.com/solo-io/valet/pkg/tests"
 	"github.com/solo-io/valet/pkg/workflow"
-	"github.com/solo-io/valet/test/e2e/gloo"
 )
 
 const (
@@ -91,34 +91,50 @@ func GetWorkflow() *workflow.Workflow {
 			workflow.WaitForPods("default"),
 			workflow.Apply("vs-petstore-1.yaml"),
 			basicCurl(200, `[{"id":1,"name":"Dog","status":"available"},{"id":2,"name":"Cat","status":"pending"}]`),
+
 			// Part 2: Set up initial RL
 			gloo.PatchSettings("settings-patch-1.yaml"),
 			workflow.Apply("vs-petstore-2.yaml"),
 			basicCurl(429, ""),
+
 			// Part 3: Set up complex rules with priority
 			gloo.PatchSettings("settings-patch-2.yaml"),
 			workflow.Apply("vs-petstore-3.yaml"),
 			curlWithHeaders(429, "Messenger", "311"),
 			curlWithHeaders(429, "Whatsapp", "311"),
 			curlWithHeaders(200, "Whatsapp", "411"),
-			// Part 4: Add JWT filter to set headers from JWT claims
+			curlWithHeaders(200, "SMS", "200"),
+			curlWithHeaders(200, "SMS", "200"),
+			curlWithHeaders(200, "SMS", "200"),
+
+			// Part 4: Add fallback type limit
+			gloo.PatchSettings("settings-patch-3.yaml"),
+			curlWithHeaders(429, "Messenger", "311"),
+			curlWithHeaders(429, "Whatsapp", "311"),
+			curlWithHeaders(200, "Whatsapp", "411"),
+			curlWithHeaders(429, "SMS", "200"),
+
+			// Part 5: Add JWT filter to set headers from JWT claims
 			workflow.Apply("vs-petstore-4.yaml"),
 			basicCurl(401, "Jwt is missing"),
 			curlWithToken(429, token1),
 			curlWithToken(429, token2),
 			curlWithToken(200, token3),
 			curlForEventualRateLimit(429, token3),
-			// Part 5: Now add WAF to block scammers
+
+			// Part 6: Now add WAF to block scammers
 			workflow.Apply("vs-petstore-5.yaml"),
 			curlWithModsecurityIntervention(),
-			// Part 6: Now add OPA to block "SMS" type
+
+			// Part 7: Now add OPA to block "SMS" type
 			curlWithToken(200, token4),
 			workflow.Apply("allow-jwt.yaml"),
 			workflow.Apply("auth-config.yaml"),
 			workflow.Apply("vs-petstore-6.yaml"),
 			curlWithToken(403, token4),
 			curlWithToken(429, token1),
-			// Part 7: Move rate limit to route level and add non-rate-limited route
+
+			// Part 8: Move rate limit to route level and add non-rate-limited route
 			workflow.Apply("vs-petstore-7.yaml"),
 			curlWithToken(429, token1),
 			otherCurlWithToken(200, token1),

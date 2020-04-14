@@ -3,8 +3,8 @@ package petclinic_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/solo-io/gloo-ref-arch/petclinic"
 	"github.com/solo-io/go-utils/testutils"
-	"github.com/solo-io/valet/test/e2e/gloo/petclinic"
 	"testing"
 )
 

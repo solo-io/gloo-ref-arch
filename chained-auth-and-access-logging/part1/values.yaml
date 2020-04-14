@@ -4,7 +4,5 @@ gloo:
   gatewayProxies:
     gatewayProxy:
       readConfig: true
-  discovery:
-    enabled: false
 settings:
   disableProxyGarbageCollection: true

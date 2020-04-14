@@ -7,6 +7,7 @@ spec:
         rateLimit:
           requestsPerUnit: 2
           unit: MINUTE
+
       # Rule 2, limit all Whatsapp requests to 1/min
       - key: type
         value: Whatsapp
@@ -21,3 +22,9 @@ spec:
               unit: MINUTE
             value: "411"
             weight: 1 # Rule 3 takes priority over other rules
+
+      # Rule 4 - all other types are rate limited to 1/min
+      - key: type
+        rateLimit:
+          requestsPerUnit: 1
+          unit: MINUTE

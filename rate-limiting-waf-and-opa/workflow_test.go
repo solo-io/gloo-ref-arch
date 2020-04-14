@@ -3,8 +3,8 @@ package rate_limiting_waf_and_opa_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	rate_limiting_waf_and_opa "github.com/solo-io/gloo-ref-arch/rate-limiting-waf-and-opa"
 	"github.com/solo-io/go-utils/testutils"
-	rate_limiting_waf_and_opa "github.com/solo-io/valet/test/e2e/gloo/rate-limiting-waf-and-opa"
 	"testing"
 )
 

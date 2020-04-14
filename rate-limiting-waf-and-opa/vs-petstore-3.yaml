@@ -20,7 +20,7 @@ spec:
     options:
       ratelimit:
         rateLimits:
-          # generate descriptors for Rule 1 and 2
+          # generate descriptors for Rule 1, 2 (and 4)
           - actions:
               - requestHeaders:
                   descriptorKey: type

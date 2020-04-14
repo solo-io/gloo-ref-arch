@@ -1,10 +1,10 @@
-package chained_auth_and_access_logging_test
+package part1_test
 
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	chained_auth_and_access_logging "github.com/solo-io/gloo-ref-arch/chained-auth-and-access-logging"
 	"github.com/solo-io/go-utils/testutils"
-	chained_auth_and_access_logging "github.com/solo-io/valet/test/e2e/gloo/chained-auth-and-access-logging"
 	"testing"
 )
 

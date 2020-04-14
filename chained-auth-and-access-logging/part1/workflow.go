@@ -1,13 +1,13 @@
-package chained_auth_and_access_logging
+package part1
 
 import (
 	"context"
+	"github.com/solo-io/gloo-ref-arch/utils/gloo"
 	"github.com/solo-io/valet/pkg/render"
 	"github.com/solo-io/valet/pkg/step/check"
 	"github.com/solo-io/valet/pkg/step/kubectl"
 	"github.com/solo-io/valet/pkg/tests"
 	"github.com/solo-io/valet/pkg/workflow"
-	"github.com/solo-io/valet/test/e2e/gloo"
 )
 
 func initialCurl() *workflow.Step {

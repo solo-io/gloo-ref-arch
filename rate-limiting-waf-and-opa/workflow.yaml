@@ -73,6 +73,75 @@ steps:
       name: gateway-proxy
       namespace: gloo-system
     statusCode: 200
+- curl:
+    headers:
+      x-number: "200"
+      x-type: SMS
+    path: /sample-route-1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    headers:
+      x-number: "200"
+      x-type: SMS
+    path: /sample-route-1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    headers:
+      x-number: "200"
+      x-type: SMS
+    path: /sample-route-1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- patch:
+    kubeType: settings
+    name: default
+    namespace: gloo-system
+    patchType: merge
+    path: settings-patch-3.yaml
+- curl:
+    headers:
+      x-number: "311"
+      x-type: Messenger
+    path: /sample-route-1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 429
+- curl:
+    headers:
+      x-number: "311"
+      x-type: Whatsapp
+    path: /sample-route-1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 429
+- curl:
+    headers:
+      x-number: "411"
+      x-type: Whatsapp
+    path: /sample-route-1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    headers:
+      x-number: "200"
+      x-type: SMS
+    path: /sample-route-1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 429
 - apply:
     path: vs-petstore-4.yaml
 - curl:
