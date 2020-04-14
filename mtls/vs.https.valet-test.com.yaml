@@ -1,0 +1,21 @@
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  name: https.valet-test.com
+  namespace: valet-test-server
+spec:
+  sslConfig:
+    secretRef:
+      name: tls.valet-test.com
+      namespace: valet-test-server
+  virtualHost:
+    domains:
+      - "valet-test.com"
+    routes:
+      - matchers:
+          - prefix: /
+        routeAction:
+          single:
+            upstream:
+              name: tls
+              namespace: valet-test-server

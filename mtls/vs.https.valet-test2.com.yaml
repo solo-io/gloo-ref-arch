@@ -1,0 +1,34 @@
+#  ➜ glooctl check
+#Checking deployments... OK
+#Checking pods... OK
+#Checking upstreams... OK
+#Checking upstream groups... OK
+#Checking auth configs... OK
+#Checking secrets... OK
+#Checking virtual services... OK
+#Checking gateways... OK
+#Checking proxies... An update to your gateway-proxy deployment was rejected due to schema/validation errors. The envoy_listener_manager_lds_update_rejected{} metric increased.
+#You may want to try using the `glooctl proxy logs` or `glooctl debug logs` commands.
+#Problems detected!
+
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  name: https.valet-test2.com
+  namespace: valet-test-server
+spec:
+  sslConfig:
+    secretRef:
+      name: tls.valet-test2.com
+      namespace: valet-test-server
+  virtualHost:
+    domains:
+      - "valet-test2.com"
+    routes:
+      - matchers:
+          - prefix: /
+        routeAction:
+          single:
+            upstream:
+              name: http
+              namespace: valet-test-server
