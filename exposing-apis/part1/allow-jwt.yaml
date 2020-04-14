@@ -6,7 +6,9 @@ data:
     allow {
         [header, payload, signature] = io.jwt.decode(input.http_request.headers["x-token"])
         trace(sprintf("%v", [payload]))
-        payload["type"] != "SMS"
+        [sms] = payload["type"] == "SMS"
+        [unknown] = payload["type"] == ""
+        !sms && !unknown
     }
 kind: ConfigMap
 metadata:

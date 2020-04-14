@@ -87,19 +87,19 @@ func GetWorkflow() *workflow.Workflow {
 		},
 		Steps: []*workflow.Step{
 			// Part 1: Deploy the app
-			workflow.Apply("petstore.yaml"),
-			workflow.WaitForPods("default"),
-			workflow.Apply("vs-petstore-1.yaml"),
+			workflow.Apply("petstore.yaml").WithId("deploy-petstore"),
+			workflow.WaitForPods("default").WithId("wait-default"),
+			workflow.Apply("vs-petstore-1.yaml").WithId("deploy-vs1"),
 			basicCurl(200, `[{"id":1,"name":"Dog","status":"available"},{"id":2,"name":"Cat","status":"pending"}]`),
 
 			// Part 2: Set up initial RL
-			gloo.PatchSettings("settings-patch-1.yaml"),
-			workflow.Apply("vs-petstore-2.yaml"),
+			gloo.PatchSettings("settings-patch-1.yaml").WithId("patch-settings-1"),
+			workflow.Apply("vs-petstore-2.yaml").WithId("deploy-vs2"),
 			basicCurl(429, ""),
 
 			// Part 3: Set up complex rules with priority
-			gloo.PatchSettings("settings-patch-2.yaml"),
-			workflow.Apply("vs-petstore-3.yaml"),
+			gloo.PatchSettings("settings-patch-2.yaml").WithId("patch-settings-2"),
+			workflow.Apply("vs-petstore-3.yaml").WithId("deploy-vs3"),
 			curlWithHeaders(429, "Messenger", "311"),
 			curlWithHeaders(429, "Whatsapp", "311"),
 			curlWithHeaders(200, "Whatsapp", "411"),
@@ -108,14 +108,14 @@ func GetWorkflow() *workflow.Workflow {
 			curlWithHeaders(200, "SMS", "200"),
 
 			// Part 4: Add fallback type limit
-			gloo.PatchSettings("settings-patch-3.yaml"),
+			gloo.PatchSettings("settings-patch-3.yaml").WithId("patch-settings-3"),
 			curlWithHeaders(429, "Messenger", "311"),
 			curlWithHeaders(429, "Whatsapp", "311"),
 			curlWithHeaders(200, "Whatsapp", "411"),
 			curlWithHeaders(429, "SMS", "200"),
 
 			// Part 5: Add JWT filter to set headers from JWT claims
-			workflow.Apply("vs-petstore-4.yaml"),
+			workflow.Apply("vs-petstore-4.yaml").WithId("deploy-vs4"),
 			basicCurl(401, "Jwt is missing"),
 			curlWithToken(429, token1),
 			curlWithToken(429, token2),
@@ -123,19 +123,19 @@ func GetWorkflow() *workflow.Workflow {
 			curlForEventualRateLimit(429, token3),
 
 			// Part 6: Now add WAF to block scammers
-			workflow.Apply("vs-petstore-5.yaml"),
+			workflow.Apply("vs-petstore-5.yaml").WithId("deploy-vs5"),
 			curlWithModsecurityIntervention(),
 
 			// Part 7: Now add OPA to block "SMS" type
 			curlWithToken(200, token4),
-			workflow.Apply("allow-jwt.yaml"),
-			workflow.Apply("auth-config.yaml"),
-			workflow.Apply("vs-petstore-6.yaml"),
+			workflow.Apply("allow-jwt.yaml").WithId("deploy-rego"),
+			workflow.Apply("auth-config.yaml").WithId("deploy-auth-config"),
+			workflow.Apply("vs-petstore-6.yaml").WithId("deploy-vs6"),
 			curlWithToken(403, token4),
 			curlWithToken(429, token1),
 
 			// Part 8: Move rate limit to route level and add non-rate-limited route
-			workflow.Apply("vs-petstore-7.yaml"),
+			workflow.Apply("vs-petstore-7.yaml").WithId("deploy-vs7"),
 			curlWithToken(429, token1),
 			otherCurlWithToken(200, token1),
 		},
@@ -147,5 +147,6 @@ func GetTestWorkflow() *tests.TestWorkflow {
 		Workflow:          GetWorkflow(),
 		Ctx:               workflow.DefaultContext(context.TODO()),
 		TestSerialization: true,
+		TestDocs:          true,
 	}
 }
