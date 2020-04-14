@@ -598,9 +598,72 @@ version:echo-v1
 version:echo-v2
 ```
 
-## Towards true self-service
+## Generalizing this approach for truly self-service teams
 
+Our solution so far still requires our ops team, who owns the domain, to add a new route to the virtual service
+each time a new service is added to our application. We can remove that dependency by using label selectors to associate 
+the route tables with the virtual service. 
 
+Let's label each of our route tables with `apiGroup: example`:
+
+{{%valet
+workflow: workflow.yaml
+step: deploy-rt-echo-4
+flags:
+  - YamlOnly
+%}}
+
+{{%valet
+workflow: workflow.yaml
+step: deploy-rt-foxtrot-6
+flags:
+  - YamlOnly
+%}}
+
+We can apply these to our cluster with the following commands:
+
+{{%valet
+workflow: workflow.yaml
+step: deploy-rt-echo-4
+%}}
+
+{{%valet
+workflow: workflow.yaml
+step: deploy-rt-foxtrot-6
+%}}
+
+Now, we can update our virtual service to have a single route that uses this label `apiGroup: example`
+in it's selector, so that services are immediately bound to the domain when they are created. 
+
+{{%valet
+workflow: workflow.yaml
+step: deploy-vs-2
+flags:
+  - YamlOnly
+%}}
+
+We can apply this to the cluster with the following command:
+
+{{%valet
+workflow: workflow.yaml
+step: deploy-vs-2
+%}}
+
+Now our routes work exactly as they did before, but we no longer need to update the virtual service 
+when new services in new namespaces come online. 
+
+This introduces a potential risk that different teams may try to define the same routes, though this 
+may be an acceptable risk to enable fully self-service teams, and we may be able to find other 
+ ways to enforce scalable. 
+
+One way that we've 
+seen our users helping facilitate self-service development teams with this approach is to package the 
+Gloo routes, as well as the deployment, service, upstream, and other configuration, into a helm chart. Teams
+can customize the helm chart with values that are appropriate for their service, thus providing stronger
+guard rails around conventions. 
+
+Stricter protection around invalid routes could be added by integrating more validation into CI/CD pipelines, 
+or using a webhook (such as the Open Policy Agent server) to block invalid config from being written to the cluster.   
 
 ## Summary
 

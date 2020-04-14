@@ -108,6 +108,14 @@ func GetWorkflow() *workflow.Workflow {
 			curl("/echo", "version:echo-v1"),
 			curlWithHeader("/echo", "version:echo-v2", "stage", "canary"),
 			curl("/foxtrot", "version:foxtrot-v2"),
+
+			// Part 8: Switch to generic virtual service and apiGroup selector
+			workflow.Apply("rt-echo-4.yaml").WithId("deploy-rt-echo-4"),
+			workflow.Apply("rt-foxtrot-6.yaml").WithId("deploy-rt-foxtrot-6"),
+			workflow.Apply("vs-2.yaml").WithId("deploy-vs-2"),
+			curl("/echo", "version:echo-v1"),
+			curlWithHeader("/echo", "version:echo-v2", "stage", "canary"),
+			curl("/foxtrot", "version:foxtrot-v2"),
 		},
 	}
 }

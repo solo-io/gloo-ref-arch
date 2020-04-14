@@ -268,3 +268,35 @@ steps:
       name: gateway-proxy
       namespace: gloo-system
     statusCode: 200
+- apply:
+    path: rt-echo-4.yaml
+  id: deploy-rt-echo-4
+- apply:
+    path: rt-foxtrot-6.yaml
+  id: deploy-rt-foxtrot-6
+- apply:
+    path: vs-2.yaml
+  id: deploy-vs-2
+- curl:
+    path: /echo
+    responseBody: version:echo-v1
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    headers:
+      stage: canary
+    path: /echo
+    responseBody: version:echo-v2
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
+- curl:
+    path: /foxtrot
+    responseBody: version:foxtrot-v2
+    service:
+      name: gateway-proxy
+      namespace: gloo-system
+    statusCode: 200
