@@ -114,6 +114,10 @@ func GetWorkflow() *workflow.Workflow {
 			curlWithHeaders(200, "Whatsapp", "411"),
 			curlWithHeaders(429, "SMS", "200"),
 
+			// Hard reset rate limit counters
+			gloo.DeleteRateLimitPod(),
+			workflow.WaitForPods("gloo-system"),
+
 			// Part 5: Add JWT filter to set headers from JWT claims
 			workflow.Apply("vs-petstore-4.yaml").WithId("deploy-vs4"),
 			basicCurl(401, "Jwt is missing"),

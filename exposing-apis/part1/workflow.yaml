@@ -150,6 +150,10 @@ steps:
       name: gateway-proxy
       namespace: gloo-system
     statusCode: 429
+- bash:
+    inline: kubectl delete pod -n gloo-system -l gloo=redis
+- waitForPods:
+    namespace: gloo-system
 - apply:
     path: vs-petstore-4.yaml
   id: deploy-vs4

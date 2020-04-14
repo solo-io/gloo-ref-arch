@@ -492,6 +492,8 @@ github.com/solo-io/valet v0.6.1-0.20200414173954-7beac1f0648b h1:zyIE2HcYd0wF8bx
 github.com/solo-io/valet v0.6.1-0.20200414173954-7beac1f0648b/go.mod h1:mJUuyNd3ymEfeHiC1WnbZ5BO2Ovq7f7GsygjV3Ieg7c=
 github.com/solo-io/valet v0.6.1-0.20200414215117-64e43bfe65a3 h1:WwBpVUF/lCkhbnnhK6eY0nPZMMSG9X99GztvC7KeIic=
 github.com/solo-io/valet v0.6.1-0.20200414215117-64e43bfe65a3/go.mod h1:mJUuyNd3ymEfeHiC1WnbZ5BO2Ovq7f7GsygjV3Ieg7c=
+github.com/solo-io/valet v0.6.1-0.20200414215703-1ac7035636cc h1:uw7SdMgGHPzgt+34ofqkJHTsoznBcT3cQ7j7S8hyfzk=
+github.com/solo-io/valet v0.6.1-0.20200414215703-1ac7035636cc/go.mod h1:mJUuyNd3ymEfeHiC1WnbZ5BO2Ovq7f7GsygjV3Ieg7c=
 github.com/spf13/afero v1.1.2/go.mod h1:j4pytiNVoe2o6bmDsKpLACNPDBIoEAkihy7loJ1B0CQ=
 github.com/spf13/afero v1.2.2 h1:5jhuqJyZCZf2JRofRvN/nIFgIWNzPa3/Vz8mYylgbWc=
 github.com/spf13/afero v1.2.2/go.mod h1:9ZxEEn6pIJ8Rxe320qSDBk6AsU0r9pR7Q4OcevTdifk=

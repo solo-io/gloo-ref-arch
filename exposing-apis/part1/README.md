@@ -101,7 +101,9 @@ spec:
 This configuration defines a counter for a request that use the descriptor `generic_key: some_value`, and 
 a limit of one per minute. We can apply it to the cluster with the following command:
 
+```
 kubectl patch -n gloo-system settings default --type merge --patch "$(cat settings-patch-1.yaml)"
+```
 
 Now we can add update our virtual service to increment this rate limiting counter. 
 
@@ -224,7 +226,9 @@ This expresses both our `Messenger` rule, and our nested `Whatsapp` rules. By se
 nested rule for `Whatsapp` messages to number `411`, we can ensure that has priority. Let's apply that 
 to the cluster:
 
+```
 kubectl patch -n gloo-system settings default --type merge --patch "$(cat settings-patch-2.yaml)"
+```
 
 Now, we can update our virtual service with new actions that inform if the request matches one or more
 of the rules in our settings:
@@ -391,7 +395,9 @@ spec:
 
 We can apply this with the following command: 
 
+```
 kubectl patch -n gloo-system settings default --type merge --patch "$(cat settings-patch-3.yaml)"
+```
 
 Now if we issue the same curl, we'll see the second request rate limited:
 

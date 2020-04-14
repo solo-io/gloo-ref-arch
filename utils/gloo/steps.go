@@ -91,6 +91,14 @@ func DeleteAllVirtualServices() *workflow.Step {
 	}
 }
 
+func DeleteRateLimitPod() *workflow.Step {
+	return &workflow.Step{
+		Bash: &script.Bash{
+			Inline: "kubectl delete pod -n gloo-system -l gloo=redis",
+		},
+	}
+}
+
 func DeleteNamespaces(ns ...string) *workflow.Step {
 	joinedNs := strings.Join(ns, " ")
 	return &workflow.Step{
