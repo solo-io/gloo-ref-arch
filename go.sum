@@ -488,8 +488,6 @@ github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6Mwd
 github.com/soheilhy/cmux v0.1.3/go.mod h1:IM3LyeVVIOuxMH7sFAkER9+bJ4dT7Ms6E4xg4kGIyLM=
 github.com/solo-io/go-utils v0.14.0 h1:y7iCqfQLFujS1UDdMKU+PjYoKD4CH07YicDZddL+/Is=
 github.com/solo-io/go-utils v0.14.0/go.mod h1:pA8kwWDNlJueffTcC1BYddTerO8zpUUGl5/7JGeC5iU=
-github.com/solo-io/valet v0.6.0 h1:vy7LQPI2wGYe0G8UdPXGbWg77caCIqVCxej/LoIk4s0=
-github.com/solo-io/valet v0.6.0/go.mod h1:mJUuyNd3ymEfeHiC1WnbZ5BO2Ovq7f7GsygjV3Ieg7c=
 github.com/solo-io/valet v0.6.1-0.20200414173954-7beac1f0648b h1:zyIE2HcYd0wF8bx8nMa3ANwGQ2cSXSc20anGGKcWeso=
 github.com/solo-io/valet v0.6.1-0.20200414173954-7beac1f0648b/go.mod h1:mJUuyNd3ymEfeHiC1WnbZ5BO2Ovq7f7GsygjV3Ieg7c=
 github.com/spf13/afero v1.1.2/go.mod h1:j4pytiNVoe2o6bmDsKpLACNPDBIoEAkihy7loJ1B0CQ=

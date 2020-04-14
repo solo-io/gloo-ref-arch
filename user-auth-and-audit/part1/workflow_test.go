@@ -3,11 +3,12 @@ package part1_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/solo-io/gloo-ref-arch/user-auth-and-audit/part1"
 	"github.com/solo-io/go-utils/testutils"
 	"testing"
 )
 
-func TestChainedAuthAndAccesslogging(t *testing.T) {
+func TestUserAuthAndAuditing(t *testing.T) {
 	RegisterFailHandler(Fail)
 	testutils.RegisterPreFailHandler(
 		func() {

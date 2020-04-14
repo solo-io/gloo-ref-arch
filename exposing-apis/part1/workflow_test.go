@@ -3,7 +3,7 @@ package part1_test
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/solo-io/gloo-ref-arch/chained-auth-and-access-logging/part1"
+	"github.com/solo-io/gloo-ref-arch/exposing-apis/part1"
 	"github.com/solo-io/go-utils/testutils"
 	"testing"
 )
