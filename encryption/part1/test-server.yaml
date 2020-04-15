@@ -41,7 +41,7 @@ spec:
       volumes:
         - name: certs
           secret:
-            secretName: test-tls
+            secretName: tls.valet-test.com
 ---
 apiVersion: v1
 kind: Service
