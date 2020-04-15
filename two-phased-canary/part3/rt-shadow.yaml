@@ -1,0 +1,25 @@
+apiVersion: gateway.solo.io/v1
+kind: RouteTable
+metadata:
+  name: echo-routes
+  namespace: echo
+  labels:
+    apiGroup: example
+spec:
+  routes:
+    - matchers:
+        - prefix: /echo
+      routeAction:
+        single:
+          upstream:
+            name: echo
+            namespace: echo
+          subset:
+            values:
+              version: v1
+      options:
+        shadowing:
+          percentage: 100
+          upstream:
+            name: shadow
+            namespace: echo
