@@ -10,8 +10,10 @@ spec:
     {{- if .Values.routes.canary }}
     - matchers:
         - headers:
-            - name: stage
-              value: canary
+            {{- range $headerName, $headerValue := .Values.routes.canary.headers }}
+            - name: {{ $headerName }}
+              value: {{ $headerValue }}
+            {{- end }}
           prefix: "/{{ .Release.Name }}"
       routeAction:
         single:

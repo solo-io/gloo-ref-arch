@@ -1,7 +1,3 @@
-# Default values for gloo-app.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
 deployment:
   v1: {}
   v2: {}
