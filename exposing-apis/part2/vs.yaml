@@ -1,0 +1,50 @@
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  name: test
+  namespace: gloo-system
+spec:
+  virtualHost:
+    domains:
+      - '*'
+    routes:
+      - matchers:
+          - prefix: /api/v1/infomedia/authentication/authenticate
+        options:
+          autoHostRewrite: true
+          extauth:
+            disable: true
+          headerManipulation:
+            responseHeadersToAdd:
+              - header:
+                  key: remote_address
+                  value: '%DOWNSTREAM_REMOTE_ADDRESS%'
+          ratelimit:
+            rateLimits:
+              - actions:
+                  - requestHeaders:
+                      descriptorKey: remote_address
+                      headerName: x-forwarded-for
+        routeAction:
+          single:
+            upstream:
+              name: valet-test-server-valet-test-server-80
+              namespace: gloo-system
+      - matchers:
+          - prefix: /
+        options:
+          autoHostRewrite: true
+          extauth:
+            disable: true
+          headerManipulation:
+            responseHeadersToAdd:
+              - header:
+                  key: remote_address
+                  value: '%DOWNSTREAM_REMOTE_ADDRESS%'
+        routeAction:
+          single:
+            upstream:
+              name: echo-echo-80
+              namespace: gloo-system
+
+

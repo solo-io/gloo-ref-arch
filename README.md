@@ -15,6 +15,8 @@ steps. Simply navigate to the desired directory and run `go test .`.
 * Two-phased canary rollout
     * [Part 1](two-phased-canary/part1): Perform a canary rollout in two phases. First, route a small slice of traffic to the new version for correctness testing. Then, use weighted destinations to shift the load to the new version. 
     * [Part 2](two-phased-canary/part2): Like part 1, but now with multiple independent teams. Use route table delegation to break up ownership of the proxy across a central ops team, responsible for the domain, and different dev teams responsible for routes to their service. Use route replacement to ensure one team's mistake doesn't block another team. 
+    * [Part 3](two-phased-canary/part3): A quick follow up to part 2, looking at how we can easily enable shadowing to help with testing. 
+    * [Part 4](two-phased-canary/part4): Let's create a helm chart that different development teams can use to deploy and upgrade their application. 
 * User Auth and Auditing 
     * [Part 1](user-auth-and-audit/part1) Expose an application securely by integrating with Google as an Identity Provider. Chain OIDC login via Google with additional authorization checks, by writing an OPA check against the JWT. Setup multiple access loggers to record traffic through the proxy. 
     * [Part 2](user-auth-and-audit/part2) Keycloak integration

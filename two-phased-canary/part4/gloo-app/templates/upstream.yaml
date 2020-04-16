@@ -1,0 +1,16 @@
+apiVersion: gloo.solo.io/v1
+kind: Upstream
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  kube:
+    selector:
+      app: {{ .Release.Name }}
+    serviceName: {{ .Release.Name }}
+    serviceNamespace: {{ .Release.Namespace }}
+    servicePort: 8080
+    subsetSpec:
+      selectors:
+        - keys:
+            - version

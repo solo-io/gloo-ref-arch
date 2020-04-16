@@ -1,0 +1,31 @@
+{{- $relname := .Release.Name -}}
+{{- $relns := .Release.Namespace -}}
+{{- range $version, $config := .Values.deployment }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $relname }}-{{ $version }}
+  namespace: {{ $relns }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ $relname }}
+      version: {{ $version }}
+  template:
+    metadata:
+      labels:
+        app: {{ $relname }}
+        version: {{ $version }}
+    spec:
+      containers:
+        - image: hashicorp/http-echo
+          args:
+            - "-text=version:{{ $relname }}-{{ $version }}"
+            - -listen=:8080
+          imagePullPolicy: Always
+          name: {{ $relname }}-{{ $version }}
+          ports:
+            - containerPort: 8080
+---
+{{- end }}
