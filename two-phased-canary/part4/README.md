@@ -1,9 +1,10 @@
 # Two-phased canary rollout with Gloo, part 4
 
-In the first part of this series, we tried to come up with a realistic workflow that you could use to perform canary testing and 
-progressive delivery, so teams can safely deliver new versions of their services in your production environment. 
+In the first part of this series, we tried to come up with a robust workflow that you could use to perform canary testing and 
+progressive delivery, so teams can safely deliver new versions of their services to users in a production environment. 
+
 In the second part, we looked at how we can scale this to potentially many teams, while maintaining a clean separation between domain and
-route-level configuration, to minimize the amount of configuration dev teams need to maintain to facilitate these workflows. 
+route-level configuration. This helps minimize the amount of configuration dev teams need to maintain to facilitate these workflows. 
 
 In the third part, we showed how teams can start to take advantages of other features in Gloo, such as traffic shadowing, 
 by enabling options on their routes. 
@@ -11,9 +12,9 @@ by enabling options on their routes.
 In this part, we're going to create a helm chart that our development teams can use for deploying applications to 
 Gloo on their Kubernetes cluster. This means they can install the application by providing a few helm values, and 
 they can invoke the canary upgrade workflow by performing helm upgrades. Doing this provides a number of benefits:
-* It lowers the barrier to entry; the workflows are really easy to execute. 
-* It drastically reduces the amount of (often) copy-pasted configuration teams need to maintain.
-* It provides nice guard rails to minimize the potential for misconfigurations. 
+* It lowers the barrier to entry; the workflow is really easy to execute. 
+* It drastically reduces the amount of (often) copy-pasted configuration different teams need to maintain.
+* It provides nice guard rails to minimize the potential for misconfiguration. 
 * It becomes trivial to integrate into a GitOps / continuous delivery workflow.
 
 As a disclaimer, a lot of services ultimately require fairly extensive configuration, some of which is unique to the 

@@ -4,24 +4,39 @@ This repo contains a set of [Valet](https://github.com/solo-io/valet) workflows 
 
 This repos contain a set of examples that can be run manually with README's for explanation. The READMEs assume the local directory is the working directory, so clone this repo to simplify executing the steps. See below for a table of contents. 
 
-### Automation
-
-Each of these workflows can be run as a go e2e test, which calls out to a library called `Valet` to automate various 
-steps. Simply navigate to the desired directory and run `go test .`. 
-
 ## Table of Contents
 
+### Introductory demo
+
 * [Petclinic](petclinic): Deploy a monolith and expose it to users with Gloo. Deploy a microservice, see the new upstream discovered, and add a route to change the application without touching the monolith. Then add a new upstream for AWS, discover lambdas, and create a route to one to fix a bug in the monolith. 
-* Two-phased canary rollout
-    * [Part 1](two-phased-canary/part1): Perform a canary rollout in two phases. First, route a small slice of traffic to the new version for correctness testing. Then, use weighted destinations to shift the load to the new version. 
-    * [Part 2](two-phased-canary/part2): Like part 1, but now with multiple independent teams. Use route table delegation to break up ownership of the proxy across a central ops team, responsible for the domain, and different dev teams responsible for routes to their service. Use route replacement to ensure one team's mistake doesn't block another team. 
-    * [Part 3](two-phased-canary/part3): A quick follow up to part 2, looking at how we can easily enable shadowing to help with testing. 
-    * [Part 4](two-phased-canary/part4): Let's create a helm chart that different development teams can use to deploy and upgrade their application. 
-* User Auth and Auditing 
-    * [Part 1](user-auth-and-audit/part1) Expose an application securely by integrating with Google as an Identity Provider. Chain OIDC login via Google with additional authorization checks, by writing an OPA check against the JWT. Setup multiple access loggers to record traffic through the proxy. 
-    * [Part 2](user-auth-and-audit/part2) Keycloak integration
-* Exposing APIs
-    * [Part 1](exposing-apis/part1): Explore increasingly complex use cases for rate limiting on APIs exposed through Gloo. Combine rate limiting with the JWT validation filter in Envoy, Gloo's WAF capabilities, and extra JWT authorization in OPA to maximize security in your production environment.  
-* Encryption 
-    * [Part 1](encryption/part1): Deploy a test server and explore different ways to set up SSL verification and termination. 
+
+### Two-phased canary rollout
+
+A series on how to implement a safe, scalable workflow for canary testing new versions of services in production environments with Gloo. 
+
+* [Part 1](two-phased-canary/part1): Perform a canary rollout in two phases. First, route a small slice of traffic to the new version for correctness testing. Then, use weighted destinations to shift the load to the new version. 
+* [Part 2](two-phased-canary/part2): Like part 1, but now with multiple independent teams. Use route table delegation to break up ownership of the proxy across a central ops team, responsible for the domain, and different dev teams responsible for routes to their service. Use route replacement to ensure one team's mistake doesn't block another team. 
+* [Part 3](two-phased-canary/part3): A quick follow up to part 2, looking at how we can easily enable shadowing to help with testing. 
+* [Part 4](two-phased-canary/part4): Let's create a helm chart that different development teams can use to deploy and upgrade their application. 
+
+### User auth and auditing
+
+The start of a series on how you can leverage Gloo as an API gateway for applications that require user login, covering 
+authentication with OIDC providers, authorization with open policy agent, auditing with Envoy access logs, and more. 
+
+* [Part 1](user-auth-and-audit/part1) Expose an application securely by integrating with Google as an Identity Provider. Chain OIDC login via Google with additional authorization checks, by writing an OPA check against the JWT. Setup multiple access loggers to record traffic through the proxy. 
+* [Part 2](user-auth-and-audit/part2) Keycloak integration
+
+### Exposing APIs
+
+The start of a series on how you can expose APIs with Gloo, including leveraging features like JWT verification, claim-based 
+authorization, rate limiting, and Web Application Firewall (WAF). 
+
+* [Part 1](exposing-apis/part1): Explore increasingly complex use cases for rate limiting on APIs exposed through Gloo. Combine rate limiting with the JWT validation filter in Envoy, Gloo's WAF capabilities, and extra JWT authorization in OPA to maximize security in your production environment.  
+
+### Encryption
+
+The start of a series that dives deep into how Gloo helps solve security concerns related to network encryption.  
+
+* [Part 1](encryption/part1): Deploy a test server and explore different ways to set up SSL verification and termination. 
 
