@@ -654,7 +654,7 @@ when new services in new namespaces come online.
 
 This introduces a potential risk that different teams may try to define the same routes, though this 
 may be an acceptable risk to enable fully self-service teams, and we may be able to find other 
- ways to enforce scalable. 
+ ways to enforce scalable conventions. 
 
 One way that we've 
 seen our users helping facilitate self-service development teams with this approach is to package the 

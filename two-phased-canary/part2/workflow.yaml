@@ -205,7 +205,7 @@ steps:
     path: settings-patch.yaml
 - curl:
     path: /foxtrot
-    responseBody: version:foxtrot-v2
+    responseBody: version:foxtrot-v1
     service:
       name: gateway-proxy
       namespace: gloo-system

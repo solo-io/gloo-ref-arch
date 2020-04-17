@@ -96,7 +96,7 @@ func GetWorkflow() *workflow.Workflow {
 
 			// Part 6: Patch settings to turn on route replacement, now foxtrot rollout is unblocked
 			gloo.PatchSettings("settings-patch.yaml").WithId("settings-patch"),
-			curl("/foxtrot", "version:foxtrot-v2"),
+			curl("/foxtrot", "version:foxtrot-v1"),
 			curlWithHeader("/foxtrot", "version:foxtrot-v2", "stage", "canary"),
 			curl("/echo", "version:echo-v1"),
 			curlRouteReplacement("/echo", "stage", "canary"),

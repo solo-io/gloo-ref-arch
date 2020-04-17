@@ -540,7 +540,7 @@ kubectl create ns echo
 ```
 
 Now we can install with our initial values:
-```
+```yaml
 deployment:
   v1: {}
 routes:
@@ -608,7 +608,7 @@ Let's see how this extends to driving our upgrade workflow.
 
 We'll use the following values for our helm upgrade, to initially deploy echo-v2. Note that this doesn't yet create any
 canary routes, it simply adds the new deployment:
-``` 
+```yaml
 deployment:
   v1: {}
   v2: {}
@@ -649,7 +649,7 @@ version:echo-v1
 Now we want to set up a route to match on the header `stage: canary` and route to the new version. All other 
 requests should continue to route to the old version. We can deploy that with another `helm upgrade`. We'll 
 use these values:
-``` 
+```yaml
 deployment:
   v1: {}
   v2: {}
@@ -689,7 +689,7 @@ version:echo-v2
 As we discussed above, the last set of values will set up our weighted destinations for phase 2, but will set the weight 
 to 0 on the canary route. So now, we can do another helm upgrade to change the weights. If we want to change the weights 
 so 50% of the traffic goes to the canary upstream, we can use these values:
-``` 
+```yaml
 deployment:
   v1: {}
   v2: {}
@@ -732,7 +732,7 @@ version:echo-v1
 ### Finishing phase 2
 
 Let's update the routes so 100% of the traffic goes to the new version. We'll use these values:
-``` 
+```yaml
 deployment:
   v1: {}
   v2: {}
@@ -777,7 +777,7 @@ version:echo-v2
 ### Decommissioning v1
 
 The final step in our workflow is to decommission the old version. Our values reduce to this:
-``` 
+```yaml
 deployment:
   v2: {}
 routes:
