@@ -2,7 +2,7 @@ setup:
 - installHelmChart:
     namespace: gloo-system
     releaseName: gloo
-    releaseUri: https://storage.googleapis.com/gloo-ee-helm/charts/gloo-ee-1.3.0.tgz
+    releaseUri: https://storage.googleapis.com/gloo-ee-helm/charts/gloo-ee-1.3.2.tgz
     set:
       license_key: env:LICENSE_KEY
     waitForPods: true
