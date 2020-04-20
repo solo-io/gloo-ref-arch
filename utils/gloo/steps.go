@@ -55,7 +55,7 @@ func InstallGlooEnterprise() *workflow.Step {
 	return &workflow.Step{
 		InstallHelmChart: &helm.InstallHelmChart{
 			ReleaseName: "gloo",
-			ReleaseUri:  "https://storage.googleapis.com/gloo-ee-helm/charts/gloo-ee-1.3.0.tgz",
+			ReleaseUri:  "https://storage.googleapis.com/gloo-ee-helm/charts/gloo-ee-1.3.2.tgz",
 			Namespace:   "gloo-system",
 			WaitForPods: true,
 			Set: map[string]string{
