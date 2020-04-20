@@ -1,9 +1,9 @@
-package part3_test
+package part4_test
 
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/solo-io/gloo-ref-arch/two-phased-canary/part3"
+	"github.com/solo-io/gloo-ref-arch/two-phased-canary/part4"
 	"github.com/solo-io/go-utils/testutils"
 	"testing"
 )
@@ -18,8 +18,8 @@ func TestTwoPhasedCanary(t *testing.T) {
 	RunSpecs(t, "Two Phased Canary Test Suite")
 }
 
-var _ = Describe("Two Phased Canary, Part 3", func() {
-	testWorkflow := part3.GetTestWorkflow()
+var _ = Describe("Two Phased Canary, Part 4", func() {
+	testWorkflow := part4.GetTestWorkflow()
 
 	BeforeSuite(func() {
 		testWorkflow.Setup(".")

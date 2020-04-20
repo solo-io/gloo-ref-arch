@@ -7,7 +7,7 @@ metadata:
   name: {{ $relname }}-{{ $version }}
   namespace: {{ $relns }}
 spec:
-  replicas: {{ $config.replicas }}
+  replicas: 1
   selector:
     matchLabels:
       app: {{ $relname }}
@@ -19,12 +19,11 @@ spec:
         version: {{ $version }}
     spec:
       containers:
-        - image: {{ $config.image }}
+        - image: hashicorp/http-echo
           args:
-            {{- range $arg := $config.args }}
-            - {{ tpl $arg $ }}
-            {{- end }}
-          imagePullPolicy: {{ $config.imagePullPolicy }}
+            - "-text=version:{{ $relname }}-{{ $version }}"
+            - -listen=:8080
+          imagePullPolicy: Always
           name: {{ $relname }}-{{ $version }}
           ports:
             - containerPort: 8080

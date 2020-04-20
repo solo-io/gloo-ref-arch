@@ -1,0 +1,6 @@
+deployment:
+  v1: {}
+routes:
+  apiGroup: example
+  primary:
+    version: v1

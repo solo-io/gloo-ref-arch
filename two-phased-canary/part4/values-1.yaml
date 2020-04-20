@@ -1,6 +1,21 @@
 deployment:
-  v1: {}
-routes:
+  v1:
+    replicas: 1
+    image: hashicorp/http-echo
+    imagePullPolicy: Always
+    args:
+      - |-
+        "-text=version:{{ .Release.Name }}-v1"
+      - -listen=:8080
+routing:
   apiGroup: example
-  primary:
-    version: v1
+  version: v1
+  canary:
+    version: v2
+    weight: 100
+    headers:
+      stage: canary
+  routes:
+    - prefix: "/{{ .Release.Name }}/foo"
+    - prefix: "/{{ .Release.Name }}/bar"
+

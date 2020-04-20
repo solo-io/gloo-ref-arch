@@ -1,0 +1,57 @@
+apiVersion: gateway.solo.io/v1
+kind: RouteTable
+metadata:
+  name: {{ .Release.Name }}-routes
+  namespace: {{ .Release.Namespace }}
+  labels:
+    apiGroup: {{ .Values.routes.apiGroup }}
+spec:
+  routes:
+    {{- if .Values.routes.canary }}
+    - matchers:
+        - headers:
+            {{- range $headerName, $headerValue := .Values.routes.canary.headers }}
+            - name: {{ $headerName }}
+              value: {{ $headerValue }}
+            {{- end }}
+          prefix: "/{{ .Release.Name }}"
+      routeAction:
+        single:
+          upstream:
+            name: {{ .Release.Name }}
+            namespace: {{ .Release.Namespace }}
+          subset:
+            values:
+              version: {{ .Values.routes.canary.version }}
+    {{- end }}
+    - matchers:
+        - prefix: "/{{ .Release.Name }}"
+      routeAction:
+        {{- if .Values.routes.canary }}
+        multi:
+          destinations:
+            - destination:
+                upstream:
+                  name: {{ .Release.Name }}
+                  namespace: {{ .Release.Namespace }}
+                subset:
+                  values:
+                    version: {{ .Values.routes.primary.version }}
+              weight: {{ sub 100 .Values.routes.canary.weight }}
+            - destination:
+                upstream:
+                  name: {{ .Release.Name }}
+                  namespace: {{ .Release.Namespace }}
+                subset:
+                  values:
+                    version: {{ .Values.routes.canary.version }}
+              weight: {{ add 0 .Values.routes.canary.weight }}
+        {{- else }}
+        single:
+          upstream:
+            name: {{ .Release.Name }}
+            namespace: {{ .Release.Namespace }}
+          subset:
+            values:
+              version: {{ .Values.routes.primary.version }}
+        {{- end }}

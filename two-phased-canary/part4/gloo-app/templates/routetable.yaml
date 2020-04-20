@@ -1,57 +1,64 @@
+{{- $releaseName := .Release.Name }}
+{{- $releaseNamespace := .Release.Namespace }}
+{{- $canary := .Values.routing.canary }}
+{{- $version := .Values.routing.version }}
+
 apiVersion: gateway.solo.io/v1
 kind: RouteTable
 metadata:
-  name: {{ .Release.Name }}-routes
-  namespace: {{ .Release.Namespace }}
+  name: {{ $releaseName }}-routes
+  namespace: {{ $releaseNamespace }}
   labels:
-    apiGroup: {{ .Values.routes.apiGroup }}
+    apiGroup: {{ .Values.routing.apiGroup }}
 spec:
   routes:
-    {{- if .Values.routes.canary }}
+    {{- range $route := .Values.routing.routes }}
+    {{- if $canary }}
     - matchers:
         - headers:
-            {{- range $headerName, $headerValue := .Values.routes.canary.headers }}
+            {{- range $headerName, $headerValue := $canary.headers }}
             - name: {{ $headerName }}
               value: {{ $headerValue }}
             {{- end }}
-          prefix: "/{{ .Release.Name }}"
+          prefix: {{ tpl $route.prefix $ }}
       routeAction:
         single:
           upstream:
-            name: {{ .Release.Name }}
-            namespace: {{ .Release.Namespace }}
+            name: {{ $releaseName }}
+            namespace: {{ $releaseNamespace }}
           subset:
             values:
-              version: {{ .Values.routes.canary.version }}
+              version: {{ $canary.version }}
     {{- end }}
     - matchers:
-        - prefix: "/{{ .Release.Name }}"
+        - prefix: {{ tpl $route.prefix $ }}
       routeAction:
-        {{- if .Values.routes.canary }}
+        {{- if $canary }}
         multi:
           destinations:
             - destination:
                 upstream:
-                  name: {{ .Release.Name }}
-                  namespace: {{ .Release.Namespace }}
+                  name: {{ $releaseName }}
+                  namespace: {{ $releaseNamespace }}
                 subset:
                   values:
-                    version: {{ .Values.routes.primary.version }}
-              weight: {{ sub 100 .Values.routes.canary.weight }}
+                    version: {{ $version }}
+              weight: {{ sub 100 $canary.weight }}
             - destination:
                 upstream:
-                  name: {{ .Release.Name }}
-                  namespace: {{ .Release.Namespace }}
+                  name: {{ $releaseName }}
+                  namespace: {{ $releaseNamespace }}
                 subset:
                   values:
-                    version: {{ .Values.routes.canary.version }}
-              weight: {{ add 0 .Values.routes.canary.weight }}
+                    version: {{ $canary.version }}
+              weight: {{ add 0 $canary.weight }}
         {{- else }}
         single:
           upstream:
-            name: {{ .Release.Name }}
-            namespace: {{ .Release.Namespace }}
+            name: {{ $releaseName }}
+            namespace: {{ $releaseNamespace }}
           subset:
             values:
-              version: {{ .Values.routes.primary.version }}
+              version: {{ $version }}
         {{- end }}
+    {{- end }}
