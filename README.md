@@ -38,5 +38,7 @@ authorization, rate limiting, and Web Application Firewall (WAF).
 
 The start of a series that dives deep into how Gloo helps solve security concerns related to network encryption.  
 
-* [Part 1](encryption/part1): Deploy a test server and explore different ways to set up SSL verification and termination. 
+* [Part 1](encryption/part1): Deploy a test server and explore different ways to set up SSL verification and termination for L7 (http) proxying. 
+* [Part 2](encryption/part2): Like part 1, but for L4 (tcp) proxying. 
+
 

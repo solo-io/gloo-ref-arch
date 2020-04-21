@@ -24,8 +24,8 @@ We're using all the same certificates and conventions as part 1, they are just s
 Now let's create the two upstreams from part 1:
 
 ```
-kubectl apply -f upstream.http.spelunker.com
-kubectl apply -f upstream.tls.spelunker.com
+kubectl apply -f upstream.http.spelunker.yaml
+kubectl apply -f upstream.tls.spelunker.yaml
 ```
 
 Here, we'll use `http` to refer to the server receiving plain http requests on the default port, though Envoy itself
@@ -37,3 +37,7 @@ port, with Envoy again passing through TCP.
 We're going to re-purpose the standard http and https gateways, to configure Envoy to act as a TCP proxy for both TLS
 and non-TLS traffic. 
 
+```
+kubectl apply -f gateway-proxy.yaml
+kubectl apply -f gateway-proxy-ssl.yaml
+```
