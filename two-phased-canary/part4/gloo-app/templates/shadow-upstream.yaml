@@ -1,0 +1,19 @@
+{{- if .Values.routing.options -}}
+{{- if .Values.routing.options.shadowing -}}
+
+apiVersion: gloo.solo.io/v1
+kind: Upstream
+metadata:
+  name: shadow-{{ .Values.routing.options.shadowing.version }}
+  namespace: echo
+spec:
+  kube:
+    selector:
+      app: echo
+      version: {{ .Values.routing.options.shadowing.version }}
+    serviceName: echo
+    serviceNamespace: echo
+    servicePort: 8080
+
+{{- end -}}
+{{- end -}}

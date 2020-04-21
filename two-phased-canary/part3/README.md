@@ -1,4 +1,4 @@
-# Two-phased canary rollout with Gloo, part 4
+# Two-phased canary rollout with Gloo, part 3
 
 In the first part of this series, we tried to come up with a robust workflow that you could use to perform canary testing and 
 progressive delivery, so teams can safely deliver new versions of their services to users in a production environment. 

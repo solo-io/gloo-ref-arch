@@ -7,9 +7,20 @@ deployment:
       - |-
         "-text=version:{{ .Release.Name }}-v1"
       - -listen=:8080
+  v2:
+    replicas: 1
+    image: hashicorp/http-echo
+    imagePullPolicy: Always
+    args:
+      - |-
+        "-text=version:{{ .Release.Name }}-v2"
+      - -listen=:8080
 routing:
   apiGroup: example
   version: v1
+  options:
+    shadowing:
+      version: v2
   routes:
     - prefix: "/{{ .Release.Name }}/foo"
     - prefix: "/{{ .Release.Name }}/bar"
