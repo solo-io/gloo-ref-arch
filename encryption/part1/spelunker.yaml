@@ -1,29 +1,29 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: valet-test-server
+  name: spelunker
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: valet-test-server
-  namespace: valet-test-server
+  name: spelunker
+  namespace: spelunker
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: valet-test-server
+      app: spelunker
       version: v1
   template:
     metadata:
       labels:
-        app: valet-test-server
+        app: spelunker
         version: v1
     spec:
       containers:
-        - image: "quay.io/solo-io/valet-test-server:0.5.0-26-ga282188-dirty"
+        - image: "quay.io/solo-io/spelunker:dev"
           imagePullPolicy: Always
-          name: valet-test-server
+          name: spelunker
           ports:
             - containerPort: 8080
               name: http
@@ -41,13 +41,13 @@ spec:
       volumes:
         - name: certs
           secret:
-            secretName: tls.valet-test.com
+            secretName: tls.spelunker.com
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: valet-test-server
-  namespace: valet-test-server
+  name: spelunker
+  namespace: spelunker
 spec:
   ports:
     - port: 80
@@ -59,4 +59,4 @@ spec:
       protocol: TCP
       name: https
   selector:
-    app: valet-test-server
+    app: spelunker

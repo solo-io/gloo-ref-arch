@@ -13,11 +13,11 @@ import (
 func main() {
 	certFile := os.Getenv("CERT_FILE")
 	if certFile == "" {
-		certFile = "valet-test.com.crt"
+		certFile = "localhost.crt"
 	}
 	keyFile := os.Getenv("KEY_FILE")
 	if keyFile == "" {
-		keyFile = "valet-test.com.key"
+		keyFile = "localhost.key"
 	}
 
 

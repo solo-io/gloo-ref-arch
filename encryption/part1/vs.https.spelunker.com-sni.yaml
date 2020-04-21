@@ -1,0 +1,28 @@
+# ➜ curl https://spelunker.com/ --resolve spelunker.com:80:35.227.127.150 --resolve spelunker.com:443:35.227.127.150 --cacert test-server/rootCA.crt
+#This is an example https server.
+#
+#&{GET / HTTP/1.1 1 1 map[Accept:[*/*] Content-Length:[0] User-Agent:[curl/7.54.0] X-Envoy-Expected-Rq-Timeout-Ms:[15000] X-Forwarded-Proto:[https] X-Request-Id:[a802ee4d-0f29-40d4-8f03-7a590f13261c]] {} <nil> 0 [] false spelunker.com map[] map[] <nil> map[] 10.52.1.92:40372 / 0xc0000b4790 <nil> <nil> 0xc00018e580}
+
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  name: https.spelunker.com
+  namespace: spelunker
+spec:
+  sslConfig:
+    secretRef:
+      name: tls.spelunker.com
+      namespace: spelunker
+    sniDomains:
+      - spelunker.com
+  virtualHost:
+    domains:
+      - "spelunker.com"
+    routes:
+      - matchers:
+          - prefix: /
+        routeAction:
+          single:
+            upstream:
+              name: tls
+              namespace: spelunker

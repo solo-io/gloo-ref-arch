@@ -30,12 +30,12 @@ init:
 # Test server
 #------------
 
-.PHONY: build-test-server
-build-test-server:
-	GO111MODULE=on CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -o _output/valet-test-server -v mtls/test-server/main.go
+.PHONY: build-spelunker
+build-spelunker:
+	GO111MODULE=on CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -o _output/spelunker -v encryption/spelunker/main.go
 
-docker-build-test-server: build-test-server
-	docker build -t quay.io/solo-io/valet-test-server:$(VERSION) -f mtls/test-server/Dockerfile _output
+docker-build-spelunker: build-spelunker
+	docker build -t quay.io/solo-io/spelunker:$(VERSION) -f encryption/spelunker/Dockerfile _output
 
-docker-push-test-server: docker-build-test-server
-	docker push quay.io/solo-io/valet-test-server:$(VERSION)
+docker-push-spelunker: docker-build-spelunker
+	docker push quay.io/solo-io/spelunker:$(VERSION)

@@ -1,0 +1,26 @@
+# ➜ curl https://spelunker2.com/ --resolve spelunker2.com:80:35.227.127.150 --resolve spelunker2.com:443:35.227.127.150 --cacert test-server/rootCA.crt
+#curl: (51) SSL: certificate subject name 'spelunker.com' does not match target host name 'spelunker2.com'
+
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  name: https.spelunker2.com
+  namespace: spelunker
+spec:
+  sslConfig:
+    secretRef:
+      name: tls.spelunker.com
+      namespace: spelunker
+    sniDomains:
+      - spelunker2.com
+  virtualHost:
+    domains:
+      - "spelunker2.com"
+    routes:
+      - matchers:
+          - prefix: /
+        routeAction:
+          single:
+            upstream:
+              name: http
+              namespace: spelunker

@@ -2,12 +2,12 @@ apiVersion: gloo.solo.io/v1
 kind: Upstream
 metadata:
   name: http
-  namespace: valet-test-server
+  namespace: spelunker
 spec:
   discoveryMetadata: {}
   kube:
     selector:
-      app: valet-test-server
-    serviceName: valet-test-server
-    serviceNamespace: valet-test-server
+      app: spelunker
+    serviceName: spelunker
+    serviceNamespace: spelunker
     servicePort: 80

@@ -1,0 +1,17 @@
+apiVersion: gloo.solo.io/v1
+kind: Upstream
+metadata:
+  name: tls
+  namespace: spelunker
+spec:
+  discoveryMetadata: {}
+  kube:
+    selector:
+      app: spelunker
+    serviceName: spelunker
+    serviceNamespace: spelunker
+    servicePort: 443
+  sslConfig:
+    secretRef:
+      name: tls.spelunker.com
+      namespace: spelunker

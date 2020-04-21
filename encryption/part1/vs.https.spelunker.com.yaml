@@ -1,16 +1,16 @@
 apiVersion: gateway.solo.io/v1
 kind: VirtualService
 metadata:
-  name: https.valet-test.com
-  namespace: valet-test-server
+  name: https.spelunker.com
+  namespace: spelunker
 spec:
   sslConfig:
     secretRef:
-      name: tls.valet-test.com
-      namespace: valet-test-server
+      name: tls.spelunker.com
+      namespace: spelunker
   virtualHost:
     domains:
-      - "valet-test.com"
+      - "spelunker.com"
     routes:
       - matchers:
           - prefix: /
@@ -18,4 +18,4 @@ spec:
           single:
             upstream:
               name: tls
-              namespace: valet-test-server
+              namespace: spelunker
