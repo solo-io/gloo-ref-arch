@@ -16,53 +16,81 @@ they can invoke the canary upgrade workflow by performing helm upgrades. Doing t
 
 As a disclaimer, a lot of services ultimately require fairly extensive configuration, some of which is unique to the 
 particular use case. However, to the extent your teams can follow standard conventions, those conventions can be encoded
-in a helm chart like we do here. 
+in a helm chart like we do here. For this part, we're going to create a minimal set of customizations for our scenario; 
+in the future, we'll make it more general. 
 
-## Breaking down our requirements
-
-In the last part, we deployed each service -- echo and foxtrot -- in a single step by applying a manifest, containing five resources: 
-a namespace, deployment, service, gloo upstream, and gloo route table. 
-
-We are going to drop the namespace from the manifest, and rely on Helm or other automation to create it for us. The other 
-four resources will be the four templates in our helm chart. 
-
-Let's assume the services that we're deploying with our chart are all single-container pods, using the standard http 
-port to listen for traffic. Later, we could improve our chart to support config maps, managing certificates and 
-secrets, and setting up things like readiness probes or resource limits. 
-
-## Creating our chart
+## Setting up our chart
 
 Helm includes a tool for creating a chart. After running `helm create gloo-app`, you'll get a directory containing 
 a `Chart.yaml`, a default `values.yaml`, an empty crds directory, and a templates directory with a number of files. 
 
-We'll update the `Chart.yaml`, delete the empty crds directory, and we'll replace all the files in the templates directory
-with the `echo.yaml` manifest from the last part. 
+We'll update the `Chart.yaml`, delete the empty crds directory, and we'll delete the contents of our template directory. 
+Over the next few steps we'll start to add in templates to model our services. 
 
-We can make sure this renders by running the following command:
+### Breaking down our requirements
 
-`helm install echo --dry-run --debug ./gloo-app --namespace echo`
+In the last part, we deployed each service -- echo and foxtrot -- by applying four resources: 
+a deployment, service, gloo upstream, and gloo route table. These will become our four templates in our chart. 
+We'll assume that the namespace for each service is created 
+in advance or by automation, and is not included in the chart itself. 
 
-If that succeeds, we're ready to start extracting values.  
+Note that this chart will not contain the Gloo control plane itself, nor will it contain our single virtual service that
+binds all our route tables to our domain. Those will be set up by a central platform team, and the helm chart is intended
+to be used by development teams to onboard to the platform. 
 
-### Values
+### Designing our initial values
 
-We're going to extract the bare minimum values so that the chart can (a) also deploy a foxtrot service, and (b) start
-to enable our canary testing workflow. There are four values we need to provide to our application:
+We're going to extract the bare minimum values so that the chart can deploy either our `echo` or `foxtrot` services at 
+a particular version. There are four values we need to provide to our application:
 
-* Service name ("echo"): We'll take this from the name of the Helm release, and in our templates access it with 
+* Service name (`echo`): We'll take this from the name of the Helm release, and in our templates access it with 
 `{{ .Release.Name }}`
-* Namespace ("echo"): this will also be provided by the Helm command, so we'll access it with `{{ .Release.Namespace }}`. 
-* App Version ("v1"): this will determine the version label to use on the pods for subset routing. For now, we'll access it
+* Namespace (`echo`): this will also be provided by the Helm command, so we'll access it with `{{ .Release.Namespace }}`. 
+* App Version (`v1`): this will determine the version label to use on the pods for subset routing. For now, we'll access it
 with `{{ .Values.appVersion }}`. 
-* Api Group ("example"): this will be the label we use on route tables so it matches our virtual service selector, and for 
+* Api Group (`example`): this will be the label we use on route tables so it matches our virtual service selector, and for 
 now we'll use `{{ .Values.apiGroup }}`
 
-### Updating the resources
+### Creating our templates
 
-Now we can modify our manifest to use these template values instead of hard coded values. We'll also split each 
-resource into it's own file: 
+Now we can create our templates. 
 
-`deployment.yaml`:
+#### Deployment
+
+First, let's create a deployment inside `templates/deployment.yaml`. Our original echo deployment looked like this:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo-v1
+  namespace: echo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: echo
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: echo
+        version: v1
+    spec:
+      containers:
+        - image: hashicorp/http-echo
+          args:
+            - "-text=version:echo-v1"
+            - -listen=:8080
+          imagePullPolicy: Always
+          name: echo-v1
+          ports:
+            - containerPort: 8080
+```
+
+In order to generalize this into a template that can deploy either `echo` or `foxtrot`, at a particular version, let's 
+extract the values. That results in a template like this: 
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -92,7 +120,26 @@ spec:
             - containerPort: 8080
 ```
 
-`service.yaml`:
+#### Service 
+
+Let's do the same with our service. Our original service looked like this:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: echo
+  namespace: echo
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app: echo
+```
+
+We'll create a template based on this with our values extracted:
 ```yaml
 apiVersion: v1
 kind: Service
@@ -108,7 +155,31 @@ spec:
     app: {{ .Release.Name }}
 ```
 
-`upstream.yaml`:
+#### Upstream
+
+Now that we have our deployment and service, we can add our upstream. Our original upstream looked like this:
+
+```yaml
+apiVersion: gloo.solo.io/v1
+kind: Upstream
+metadata:
+  name: echo
+  namespace: gloo-system
+spec:
+  kube:
+    selector:
+      app: echo
+    serviceName: echo
+    serviceNamespace: echo
+    servicePort: 8080
+    subsetSpec:
+      selectors:
+        - keys:
+            - version
+```
+
+We'll extract into the following template: 
+
 ```yaml
 apiVersion: gloo.solo.io/v1
 kind: Upstream
@@ -128,7 +199,32 @@ spec:
             - version
 ```
 
-`routetable.yaml`:
+#### Route table
+
+Finally, we need to create the route table containing our initial route. To start, this looks like:
+
+```yaml
+apiVersion: gateway.solo.io/v1
+kind: RouteTable
+metadata:
+  name: foxtrot-routes
+  namespace: foxtrot
+spec:
+  routes:
+    - matchers:
+        - prefix: /foxtrot
+      routeAction:
+        single:
+          upstream:
+            name: foxtrot
+            namespace: gloo-system
+          subset:
+            values:
+              version: v1
+```
+
+We'll create the following template based on this route table: 
+
 ```yaml
 apiVersion: gateway.solo.io/v1
 kind: RouteTable
@@ -151,12 +247,16 @@ spec:
               version: {{ .Values.appVersion }}
 ```
 
-Finally, here are our default values:
+### Default Values
+
+We can update the default `values.yaml` in our chart to have the following:
 
 ```yaml
 appVersion: v1
 apiGroup: example
 ```
+
+### Testing our chart
 
 We should now have the pieces we need to deploy echo and foxtrot with the following commands:
 
@@ -167,12 +267,24 @@ kubectl create ns foxtrot
 helm install foxtrot  ./gloo-app --namespace foxtrot
 ```
 
-## Modeling our workflow 
+#### Sidebar on testing helm charts
+
+There are different schools of though on how to test Helm charts. In Gloo, we've created some libraries so we can make sure
+that charts render with the expected resources when different sets of values are provided. Helm 3 also has some built in 
+starting points for testing. In practice, a chart that is used for production should be well tested, but for this post we'll 
+skip unit testing. 
+
+The other technique we may use when developing these templates is regularly running the `helm install` command with the 
+`--dry-run` flag, to ensure the template doesn't have a syntax error and the resources render as we expect. 
+
+## Updating our chart to support the two-phased upgrade workflow
 
 Now that we have a base chart, we need to expose values that help execute our phased upgrade workflow. 
 Remember we had the following phases in our rollout strategy:
 * Phase 1: canary test using a special header that routes a targeted, small amount of traffic to the new version for functional testing
 * Phase 2: shift load to the new version while monitoring performance
+
+### Designing our helm values
 
 We can start by designing some values that might be able to express different points in the workflow. In particular, 
 if we think about which resources we need to modify during our workflow, we have two main sections in our values:
@@ -189,7 +301,7 @@ a version.
 We'll also use a simple approach to phase 2. We'll add a `routes.canary.weight` parameter so the canary destination 
 can be given a weight between 0 and 100. The primary weight will be computed as `100 - routes.canary.weight`. 
 
-### Canary workflow, expressed as Helm values
+#### Canary workflow, expressed as Helm values
 
 Now that we've settled on a design, let's actually express this workflow in a series of Helm values. 
 
@@ -291,11 +403,12 @@ routes:
 Fantastic - we can now express each step of our workflow in declarative helm values. This means that once we update the 
 chart, we'll be able to execute our workflow simply through running `helm upgrade`. 
 
-## Building it into the chart
+### Updating our templates
 
-Now that we know how we want to express our values, we can update the templates. 
+Now that we know how we want to express our values, we can update the templates. Since the upstream and service templates
+did not use anything from the Helm values, we don't need to change them, we just need to update the deployment and route table. 
 
-### Deployment
+#### Deployment
 
 Our deployment template needs to be updated now that `deployment` is a map of version to configuration. We want to create 
 one deployment resource for each version in the map, so we'll wrap our template to range over the deployment value. Here's 
@@ -342,10 +455,9 @@ we'll save those to variables that we can access.
 
 Otherwise, this looks very similar to our template from before. 
 
-### Route table
+#### Route table
 
-This template will take a little more work to start using the values we provided, though we'll still end up with a single
-route table and won't need to create any variables for ranges. 
+Now let's update our route table to start expressing our canary route configuration when those values are specified. 
 
 ```yaml
 apiVersion: gateway.solo.io/v1
@@ -438,7 +550,7 @@ This route will be included as long as `canary` isn't nil. It'll use the `versio
  
 We also need to customize our route action on our other route, because during Phase 2, we change it from a single to a multi 
 destination and establish weights:
-```yaml 
+```yaml
       routeAction:
         {{- if .Values.routes.canary }}
         multi:
@@ -476,19 +588,6 @@ version. This just keeps our template and values minimal.
 
 The other interesting note is that we are using `Helm` arithmetic functions on the weights, so that we always end up
 with a total weight of 100, and so that a user only needs to specify a single weight in the values. 
-
-Finally, we'll make sure the other templates are updated to use our new value structure. And with that, we're now ready 
-to start testing our chart. 
-
-## Testing helm charts, the abridged version
-
-There are different schools of though on how to test Helm charts. In Gloo, we've created some libraries so we can make sure
-that charts render with the expected resources when different sets of values are provided. Helm 3 also has some built in 
-starting points for testing. In practice, a chart that is used for production should be well tested, but for this post we'll 
-skip unit testing. 
-
-The other technique we may use when developing these templates is regularly running the `helm install` command with the 
-`--dry-run` flag, to ensure the template doesn't have a syntax error and the resources render as we expect. 
 
 ## Running the workflow with our new chart
 
@@ -820,7 +919,7 @@ First, we'll need to introduce a lot more values to our chart in order to start 
 are potentially many things we'd need to customize, such as the deployment image, resource limits, options enabled, and so forth. 
 We also may need to support 
 multiple routes and alternative paths. Hopefully, at this point you are convinced that we could tackle those
-as extensions to our work so far. We'll tackle one of these in the next part.  
+as extensions to our work so far, and we may dig into this in a future part. 
 
 Second, we're now ready to integrate fully into a CI/CD process. Many users interact with their production clusters by 
 customizing helm values and using automation, such as the Helm operator or the Flux project, to help deliver those 
