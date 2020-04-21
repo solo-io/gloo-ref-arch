@@ -1,0 +1,26 @@
+apiVersion: gateway.solo.io/v1
+kind: Gateway
+metadata:
+  labels:
+    app: gloo
+  name: gateway-proxy-ssl
+  namespace: gloo-system
+spec:
+  bindAddress: '::'
+  bindPort: 8443
+  tcpGateway:
+    tcpHosts:
+      - name: tls
+        destination:
+          single:
+            upstream:
+              name: tls
+              namespace: spelunker
+        sslConfig:
+          secretRef:
+            name: tls.spelunker.com
+            namespace: gloo-system
+          alpnProtocols: ["http/1.1"] # this prevents "Error in the HTTP2 framing layer" with curl https://spelunker.com/ --resolve spelunker.com:443:$GLOO_HOST -k
+
+  ssl: true
+  useProxyProto: false

@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: spelunker
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spelunker
+  namespace: spelunker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spelunker
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: spelunker
+        version: v1
+    spec:
+      containers:
+        - image: "quay.io/solo-io/spelunker:dev"
+          imagePullPolicy: Always
+          name: spelunker
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 8443
+              name: https
+          env:
+            - name: "CERT_FILE"
+              value: "/etc/certs/tls.crt"
+            - name: "KEY_FILE"
+              value: "/etc/certs/tls.key"
+          volumeMounts:
+            - name: certs
+              mountPath: "/etc/certs"
+              readOnly: true
+      volumes:
+        - name: certs
+          secret:
+            secretName: tls.spelunker.com
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spelunker
+  namespace: spelunker
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+    - port: 443
+      targetPort: 8443
+      protocol: TCP
+      name: https
+  selector:
+    app: spelunker

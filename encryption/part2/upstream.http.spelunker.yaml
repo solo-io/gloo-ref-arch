@@ -1,0 +1,13 @@
+apiVersion: gloo.solo.io/v1
+kind: Upstream
+metadata:
+  name: http
+  namespace: spelunker
+spec:
+  discoveryMetadata: {}
+  kube:
+    selector:
+      app: spelunker
+    serviceName: spelunker
+    serviceNamespace: spelunker
+    servicePort: 80
