@@ -4,7 +4,8 @@ In the first part of this series, we tried to come up with a robust workflow tha
 progressive delivery, so teams can safely deliver new versions of their services to users in a production environment. 
 
 In the second part, we looked at how we can scale this to potentially many teams, while maintaining a clean separation between domain and
-route-level configuration. This helps minimize the amount of configuration dev teams need to maintain to facilitate these workflows. 
+route-level configuration. This helps minimize the amount of configuration dev teams need to maintain to facilitate these workflows, 
+and makes the platform self-service while protecting against misconfiguration.  
 
 In this part, we're going to create a helm chart that our development teams can use for deploying applications to 
 Gloo on their Kubernetes cluster. This means they can install the application by providing a few helm values, and 
@@ -697,8 +698,8 @@ TEST SUITE: None
 version:foxtrot-v1
 ```
 
-This is a huge improvement from before, where we were copy pasting a ton of yaml, and needed to do a lot more manual work. 
-Let's see how this extends to driving our upgrade workflow. 
+This is a huge improvement from before, where we were copy pasting a ton of yaml, and needed to do a lot more manual work
+to bring new services online. Let's see how this extends to driving our upgrade workflow. 
 
 ### Starting the upgrade to echo-v2
 
