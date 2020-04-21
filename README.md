@@ -1,8 +1,8 @@
-This repo contains a set of [Valet](https://github.com/solo-io/valet) workflows (and associated resources) to setup and step through Gloo demos, examples, and deployment architectures. 
-
 ## How to Use This Repo
 
-This repos contain a set of examples that can be run manually with README's for explanation. The READMEs assume the local directory is the working directory, so clone this repo to simplify executing the steps. See below for a table of contents. 
+This repos contain a set of examples that can be run manually with README's for explanation. 
+The READMEs assume the local directory is the working directory, so clone this repo to simplify executing the steps. 
+See below for a table of contents. 
 
 ## Table of Contents
 
