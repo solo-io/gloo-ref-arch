@@ -88,6 +88,7 @@ There are two areas we need to configure to start using rate limiting.
 First, we need to update the Gloo settings to define one or more rules, that specify limits associated 
 with unique sets of descriptors. To start, let's use a very simple example. 
 
+```
 spec:
   ratelimit:
     descriptors:
@@ -96,7 +97,7 @@ spec:
           requestsPerUnit: 1
           unit: MINUTE
         value: some_value
-
+```
 
 This configuration defines a counter for a request that use the descriptor `generic_key: some_value`, and 
 a limit of one per minute. We can apply it to the cluster with the following command:
@@ -198,6 +199,7 @@ in which case we'll allow 30 requests per second.
 
 We can express that in our settings with the following rule configuration:
 
+```
 spec:
   ratelimit:
     descriptors:
@@ -221,6 +223,7 @@ spec:
               unit: MINUTE
             value: "411"
             weight: 1 # Rule 3 takes priority over other rules
+```
 
 This expresses both our `Messenger` rule, and our nested `Whatsapp` rules. By setting a weight on the 
 nested rule for `Whatsapp` messages to number `411`, we can ensure that has priority. Let's apply that 
@@ -362,6 +365,7 @@ repeatedly succeeds:
 
 To fix this, let's add one more fallback rule, so that any other type of message is limited to 1/min. 
 
+```
 spec:
   ratelimit:
     descriptors:
@@ -392,6 +396,7 @@ spec:
         rateLimit:
           requestsPerUnit: 1
           unit: MINUTE
+```
 
 We can apply this with the following command: 
 

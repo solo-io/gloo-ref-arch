@@ -1,0 +1,15 @@
+apiVersion: v1
+data:
+  opa-policy.rego: |-
+    package test
+    default allow = false
+    allow {
+        [header, payload, signature] = io.jwt.decode(input.http_request.headers["x-token"])
+        trace(sprintf("%v", [payload]))
+        payload["type"] != "SMS"
+        payload["type"] != ""
+    }
+kind: ConfigMap
+metadata:
+  name: allow-jwt
+  namespace: gloo-system

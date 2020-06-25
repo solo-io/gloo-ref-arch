@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
+	"strconv"
 
 	// "fmt"
 	// "io"
@@ -42,7 +44,26 @@ type HttpHandler struct {
 
 func (h *HttpHandler) ServeHTTP(w http.ResponseWriter, request *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
-	response := fmt.Sprintf("This is an example http server.\n\n%v\n", request)
+	response := ""
+	errRateStr := request.Header.Get("x-error-rate")
+	if errRateStr != "" {
+		errRate, err := strconv.Atoi(errRateStr)
+		if err != nil {
+			response = fmt.Sprintf("Error parsing error rate %s: %s", errRateStr, err)
+		} else if errRate < 0 || errRate > 100 {
+			response = fmt.Sprintf("Invalid error rate: %d", errRate)
+		} else {
+			randVal := rand.Intn(100)
+			if randVal <= errRate {
+				w.WriteHeader(http.StatusInternalServerError)
+				response = "Server error!"
+			}
+		}
+	}
+
+	if response == "" {
+		response = fmt.Sprintf("This is an example http server.\n\n%v\n", request)
+	}
 	w.Write([]byte(response))
 }
 

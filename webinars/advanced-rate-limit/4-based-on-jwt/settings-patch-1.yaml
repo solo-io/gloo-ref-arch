@@ -1,0 +1,25 @@
+# Messages have a "type" and "number"
+# All "Messenger" type messages should rate limit 2/min
+# All "Whatsapp" type messages should rate limit 1/min
+#                     except to number 411, rate limit 30/min
+
+spec:
+  ratelimit:
+    descriptors:
+      - key: type
+        value: Messenger
+        rateLimit:
+          requestsPerUnit: 2
+          unit: MINUTE
+      - key: type
+        value: Whatsapp
+        rateLimit:
+          requestsPerUnit: 1
+          unit: MINUTE
+        descriptors:
+          - key: number
+            rateLimit:
+              requestsPerUnit: 30
+              unit: MINUTE
+            value: "411"
+            weight: 1
