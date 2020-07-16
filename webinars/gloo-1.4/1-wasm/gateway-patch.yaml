@@ -1,0 +1,10 @@
+spec:
+  httpGateway: 
+    options:
+      wasm:
+        filters:
+        - config: |
+            {}
+          image: webassemblyhub.io/solo.io/metrics:gloo-1.3.x
+          name: metrics
+          root_id: stats_root_id

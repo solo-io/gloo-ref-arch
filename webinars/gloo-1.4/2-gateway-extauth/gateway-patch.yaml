@@ -1,0 +1,8 @@
+spec:
+  httpGateway: 
+    options:
+      extauth:
+        extauthzServerRef:
+          name: auth-server
+          namespace: gloo-system
+        httpService: {}

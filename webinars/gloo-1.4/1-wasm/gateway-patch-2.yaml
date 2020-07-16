@@ -1,0 +1,10 @@
+spec:
+  httpGateway: 
+    options:
+      wasm:
+        filters:
+        - config: |
+            World!
+          image: webassemblyhub.io/ilackarms/add-header:v0.1
+          name: myfilter
+          root_id: add_header
