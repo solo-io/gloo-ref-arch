@@ -59,4 +59,6 @@ Wait for the proxy to be accepted.
 
 * Web Assembly Hub: a collection of community-built wasm filters for Envoy
 * wasme: our open source tooling to simplify the process of building, distributing, and deploying wasm modules
-* Slack: join the slack community, join the wasm community meeting that happens every 2 weeks, follow the web assembly community notes in Google Docs. Betty will be sending out links to all these resources for anyone here today. 
+* Slack: join the slack community, follow the web assembly community notes in Google Docs. 
+
+Betty will be sending out links to all these resources for anyone here today. 

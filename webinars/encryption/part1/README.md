@@ -133,6 +133,31 @@ http endpoint:
 k apply -f vs.https.spelunker2.com.yaml
 ```
 
+If we test the route at this point, we will see an error:
+```
+➜ curl https://spelunker2.com/ --resolve spelunker2.com:443:$GLOO_HOST --cacert rootCA.crt
+curl: (51) SSL: certificate subject name 'spelunker.com' does not match target host name 'spelunker2.com'
+```
+
+The problem is we didn't create a new certificate for the new domain we set up. Instead, we copied the other https 
+virtual service and tried to use the old domain's certificate. We can fix this by creating a new certificate for the new domain:
+
+```
+openssl genrsa -out spelunker2.com.key 2048
+openssl req -new -key spelunker2.com.key -out spelunker2.com.csr
+openssl x509 -req -in spelunker2.com.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -out spelunker2.com.crt -days 500 -sha256
+```
+
+And we can put this certificate into a TLS secret:
+```
+kubectl create secret tls tls.spelunker2.com --key spelunker2.com.key --cert spelunker2.com.crt --namespace spelunker
+```
+
+Now we can update our route to use the new certificate, this time for the domain matching the virtual service and SNI domains:
+``` 
+k apply -f vs.https.spelunker2.com-fixed.yaml
+```
+
 If we run `glooctl check`, we'll see an error:
 ``` 
 ➜ glooctl check
@@ -172,30 +197,7 @@ Checking proxies... OK
 No problems detected.
 ```
 
-If we test the route at this point, we will still see an error:
-```
-➜ curl https://spelunker2.com/ --resolve spelunker2.com:443:$GLOO_HOST --cacert rootCA.crt
-curl: (51) SSL: certificate subject name 'spelunker.com' does not match target host name 'spelunker2.com'
-```
 
-The problem is we didn't create a new certificate for the new domain we set up. Instead, we copied the other https 
-virtual service and tried to use the old domain's certificate. We can fix this by creating a new certificate for the new domain:
-
-```
-openssl genrsa -out spelunker2.com.key 2048
-openssl req -new -key spelunker2.com.key -out spelunker2.com.csr
-openssl x509 -req -in spelunker2.com.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -out spelunker2.com.crt -days 500 -sha256
-```
-
-And we can put this certificate into a TLS secret:
-```
-kubectl create secret tls tls.spelunker2.com --key spelunker2.com.key --cert spelunker2.com.crt --namespace spelunker
-```
-
-Now we can update our route to use the new certificate, this time for the domain matching the virtual service and SNI domains:
-``` 
-k apply -f vs.https.spelunker2.com-sni-fixed.yaml
-```
 
 Now if we test the route, we'll see the requests return as we expect. The client sends a request to envoy that is encrypted, 
 Envoy terminates SSL and forwards the request to the plain http port. 

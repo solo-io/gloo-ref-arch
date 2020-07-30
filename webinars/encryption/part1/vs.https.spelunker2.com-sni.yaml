@@ -1,7 +1,5 @@
 # ➜ curl https://spelunker2.com/ --resolve spelunker2.com:80:35.227.127.150 --resolve spelunker2.com:443:35.227.127.150 --cacert test-server/rootCA.crt
-#This is an example http server.
-#
-#&{GET / HTTP/1.1 1 1 map[Accept:[*/*] Content-Length:[0] User-Agent:[curl/7.54.0] X-Envoy-Expected-Rq-Timeout-Ms:[15000] X-Forwarded-Proto:[https] X-Request-Id:[02c81bc7-2cf9-49ef-bcda-f2fb58196cf7]] {} <nil> 0 [] false spelunker2.com map[] map[] <nil> map[] 10.52.1.92:34364 / <nil> <nil> <nil> 0xc00018e540}
+#curl: (51) SSL: certificate subject name 'spelunker.com' does not match target host name 'spelunker2.com'
 
 apiVersion: gateway.solo.io/v1
 kind: VirtualService
@@ -11,7 +9,7 @@ metadata:
 spec:
   sslConfig:
     secretRef:
-      name: tls.spelunker2.com # use correct certificates
+      name: tls.spelunker2.com
       namespace: spelunker
     sniDomains:
       - spelunker2.com

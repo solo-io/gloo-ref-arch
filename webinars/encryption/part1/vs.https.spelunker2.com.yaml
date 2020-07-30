@@ -19,7 +19,7 @@ metadata:
 spec:
   sslConfig:
     secretRef:
-      name: tls.spelunker2.com
+      name: tls.spelunker.com
       namespace: spelunker
   virtualHost:
     domains:

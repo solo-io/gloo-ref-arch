@@ -6,11 +6,16 @@ See below for a table of contents.
 
 ## Table of Contents
 
-### Introductory demo
+### Webinars
 
-* [Petclinic](petclinic): Deploy a monolith and expose it to users with Gloo. Deploy a microservice, see the new upstream discovered, and add a route to change the application without touching the monolith. Then add a new upstream for AWS, discover lambdas, and create a route to one to fix a bug in the monolith. 
+* [Petclinic](webinars/petclinic) ([Recording](https://www.youtube.com/watch?v=pcCCuBuJeyA)): Deploy a monolith and expose it to users with Gloo. Deploy a microservice, see the new upstream discovered, and add a route to change the application without touching the monolith. Then add a new upstream for AWS, discover lambdas, and create a route to one to fix a bug in the monolith. 
+* [Advanced Rate Limiting](webinars/advanced-rate-limit) ([Recording](https://www.youtube.com/watch?v=wVSSfcxjLy8)): Explore advanced rate limiting use cases. 
+* [Gloo 1.3: Dev Portal](webinars/dev-portal) ([Recording](https://www.youtube.com/watch?v=-AQe8AnXOtU)): Let's look at Gloo 1.3, focused on the new developer portal. 
+* [Gloo 1.4: Per-listener auth servers](webinars/gloo-1.4) ([Recording](https://www.youtube.com/watch?v=lpW4524AqJ0)): Let's look at Gloo 1.4, focused on new support for multiple auth servers. 
+* [Encryption](webinars/encryption): Let's go through all the scenarios for L4/L7 SSL encryption with Gloo. 
 
-### Two-phased canary rollout
+
+### Two-phased canary rollout (blog series)
 
 A series on how to implement a safe, scalable workflow for canary testing new versions of services in production environments with Gloo. 
 
@@ -33,12 +38,5 @@ The start of a series on how you can expose APIs with Gloo, including leveraging
 authorization, rate limiting, and Web Application Firewall (WAF). 
 
 * [Part 1](exposing-apis/part1): Explore increasingly complex use cases for rate limiting on APIs exposed through Gloo. Combine rate limiting with the JWT validation filter in Envoy, Gloo's WAF capabilities, and extra JWT authorization in OPA to maximize security in your production environment.  
-
-### Encryption
-
-The start of a series that dives deep into how Gloo helps solve security concerns related to network encryption.  
-
-* [Part 1](encryption/part1): Deploy a test server and explore different ways to set up SSL verification and termination for L7 (http) proxying. 
-* [Part 2](encryption/part2): Like part 1, but for L4 (tcp) proxying. 
 
 
