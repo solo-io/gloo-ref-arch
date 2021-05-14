@@ -39,4 +39,7 @@ authorization, rate limiting, and Web Application Firewall (WAF).
 
 * [Part 1](exposing-apis/part1): Explore increasingly complex use cases for rate limiting on APIs exposed through Gloo. Combine rate limiting with the JWT validation filter in Envoy, Gloo's WAF capabilities, and extra JWT authorization in OPA to maximize security in your production environment.  
 
+### Envoy Metrics
+
+This [example](custom-dashboard) focuses on how you can leverage Gloo Enterprise observability to expose Envoy metrics in custom Upstream dashboards.  
 
