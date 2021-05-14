@@ -180,7 +180,7 @@ First, let's take a look at what we have created.
 
 ![Request Time Heatmap](./images/grafana-4.png "New Panel Added")
 
-Cool!  We've got some nice colors there to and we can see that the traffic is running smoothly. Let's download the JSON so we can add it to the heatmap. Use the drop-down menu on the *Request Time Heatmap* panel and select *More..." and then *Panel JSON*.
+Cool!  We've got some nice colors there too and we can see that the traffic is running smoothly. Let's download the JSON so we can add it to the heatmap. Use the drop-down menu on the *Request Time Heatmap* panel and select *More..." and then *Panel JSON*.
 
 ![Copy to Clipboard](./images/grafana-5.png "Copy JSON")
 
