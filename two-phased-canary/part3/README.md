@@ -172,7 +172,7 @@ spec:
       app: echo
     serviceName: echo
     serviceNamespace: echo
-    servicePort: 8080
+    servicePort: 80
     subsetSpec:
       selectors:
         - keys:
@@ -193,7 +193,7 @@ spec:
       app: {{ .Release.Name }}
     serviceName: {{ .Release.Name }}
     serviceNamespace: {{ .Release.Namespace }}
-    servicePort: 8080
+    servicePort: 80
     subsetSpec:
       selectors:
         - keys:

@@ -9,7 +9,7 @@ spec:
       app: {{ .Release.Name }}
     serviceName: {{ .Release.Name }}
     serviceNamespace: {{ .Release.Namespace }}
-    servicePort: 8080
+    servicePort: 80
     subsetSpec:
       selectors:
         - keys:
