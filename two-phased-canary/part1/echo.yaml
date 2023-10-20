@@ -37,7 +37,7 @@ metadata:
   namespace: echo
 spec:
   ports:
-    - port: 80
+    - port: 8080
       targetPort: 8080
       protocol: TCP
   selector:
