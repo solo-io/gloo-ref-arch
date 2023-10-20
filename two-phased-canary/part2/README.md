@@ -135,7 +135,7 @@ spec:
       app: echo
     serviceName: echo
     serviceNamespace: echo
-    servicePort: 8080
+    servicePort: 80
     subsetSpec:
       selectors:
         - keys:
@@ -163,7 +163,7 @@ spec:
       app: foxtrot
     serviceName: foxtrot
     serviceNamespace: foxtrot
-    servicePort: 8080
+    servicePort: 80
     subsetSpec:
       selectors:
         - keys:

@@ -13,7 +13,7 @@ spec:
       version: {{ .Values.routing.options.shadowing.version }}
     serviceName: echo
     serviceNamespace: echo
-    servicePort: 8080
+    servicePort: 80
 
 {{- end -}}
 {{- end -}}
